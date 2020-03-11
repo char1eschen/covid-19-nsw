@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <v-client-table :data="tableData" :columns="columns" :options="options">
+    <v-client-table v-if="columns" :data="tableData" :columns="columns" :options="options">
       <a
         :href="props.row.source"
         target="_blank"
@@ -27,6 +27,16 @@ export default {
           status: "Status",
           dateofdiagnosis: "Date of Diagnosis"
         },
+        texts:{
+          limit:"Cases pre page:",
+          page:"Page:",
+          filterBy:"Filter by {column}",
+        },
+        pagination: { 
+          // dropdown: true,
+        },
+        // perPage: 25,
+        // perPageValues: [25, 50, 100],
         filterByColumn: true,
         filterable: true,
         listColumns: {
@@ -38,7 +48,6 @@ export default {
           status: [
             { id: "Admission", text: "Admission" },
             { id: "Discharged", text: "Discharged" }
-            // { id: "Unknow", text: "Unknown", hide: true }
           ]
         },
         dateColumns: ["dateofdiagnosis"],
@@ -54,7 +63,7 @@ export default {
     columns: {
       type: Array,
       default: () => {
-        return [];
+        return null;
       }
     },
     tableData: {

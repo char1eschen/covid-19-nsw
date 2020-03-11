@@ -15,13 +15,12 @@ export default {
   name: "App",
   data() {
     return {
-      columns: [],
+      columns: null,
       tableData: []
     };
   },
   mounted() {
     this.getData();
-    console.log("this.tableData", this.tableData);
   },
   methods: {
     getData() {
@@ -31,8 +30,10 @@ export default {
         )
         .then(response => {
           // handle success
+          let columns = []
           let entryData = response.data.feed.entry;
           // let updated = response.data.feed.updated;
+          // set table data
           entryData.forEach(item => {
             let itemObj = {};
             Object.keys(item).forEach(key => {
@@ -50,15 +51,23 @@ export default {
           // console.log("updated", updated);
           // console.log("response", response);
           // console.log("tableData", tableData);
+          
+          // set table columns
           if (this.tableData[0]) {
             Object.keys(this.tableData[0]).forEach(key => {
               if (key !== "source") {
-                this.columns.push(key);
+                columns.push(key);
               }
             });
           }
+          this.columns = columns
           // console.log("columns", this.columns);
           // console.log("tableData", this.tableData);
+
+          // set charts data
+          entryData.forEach(item=> {
+            console.log('item', item)
+          })
         })
         .catch(error => {
           // handle error
