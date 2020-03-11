@@ -51,6 +51,7 @@ export default {
           ]
         },
         dateColumns: ["dateofdiagnosis"],
+        // dateFormat: 'YYYY-MM-DD',
         datepickerOptions: {
           // See http://www.daterangepicker.com/#options
           showDropdowns: true,

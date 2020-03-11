@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
+    <Loading :active.sync="isLoading" 
+        :can-cancel="true" 
+        :loader="loader"
+        :is-full-page="fullPage"></Loading>
+    <Header :updatedDate="updatedDate"/>
     <Table :columns="columns" :tableData="tableData" />
   </div>
 </template>
@@ -8,15 +12,22 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import Loading from 'vue-loading-overlay';
+import Header from "./components/Header.vue";
 import Table from "./components/Table.vue";
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 const token = "1SCaQqie7igxhaj6fK22oJmkz3xJlw_Snfp3jFqE2JhQ";
 export default {
   name: "App",
   data() {
     return {
+      isLoading: true,
+      loader: 'dots',
+      fullPage: true,
       columns: null,
-      tableData: []
+      tableData: [],
+      updatedDate: ''
     };
   },
   mounted() {
@@ -30,9 +41,10 @@ export default {
         )
         .then(response => {
           // handle success
+          this.isLoading = false
           let columns = []
           let entryData = response.data.feed.entry;
-          // let updated = response.data.feed.updated;
+          let updated = response.data.feed.updated;
           // set table data
           entryData.forEach(item => {
             let itemObj = {};
@@ -48,7 +60,8 @@ export default {
             this.tableData.push(itemObj);
           });
 
-          // console.log("updated", updated);
+          this.updatedDate = moment(updated).format('Do MMM YYYY, hh:mm:ss')
+          console.log("updated", this.updatedDate);
           // console.log("response", response);
           // console.log("tableData", tableData);
           
@@ -65,9 +78,9 @@ export default {
           // console.log("tableData", this.tableData);
 
           // set charts data
-          entryData.forEach(item=> {
-            console.log('item', item)
-          })
+          // entryData.forEach(item=> {
+          //   console.log('item', item)
+          // })
         })
         .catch(error => {
           // handle error
@@ -79,7 +92,9 @@ export default {
     }
   },
   components: {
-    Table
+    Header,
+    Table,
+    Loading
   }
 };
 </script>
