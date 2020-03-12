@@ -1,24 +1,26 @@
 <template>
-  <header class="container-fluid">
+  <div class="panelHeader">
     <div class="row">
       <div class="col-xs-12">
-        <h1>NSW Coronavirus (COVID-19) statistics</h1>
-        <small>Updated on {{ updatedDate }} AEDT</small>
+        <h2>{{ panelTitle }}</h2>
+        <hr />
       </div>
     </div>
-  </header>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "Header",
+  name: "PanelHeader",
   data() {
     return {};
   },
   props: {
-    updatedDate: {
+    panelTitle: {
       type: String,
-      default: null
+      default: () => {
+        return "";
+      }
     }
   },
   methods: {}
@@ -26,4 +28,9 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped lang="stylus">
+// .panelHeader {
+//   padding-right: 20px;
+//   padding-left: 20px;
+// }
+</style>

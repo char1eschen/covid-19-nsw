@@ -1,19 +1,25 @@
 <template>
-  <div class="">
-    <v-client-table v-if="columns" :data="tableData" :columns="columns" :options="options">
-      <a
-        :href="props.row.source"
-        target="_blank"
-        slot="caseno"
-        slot-scope="props"
-      >
-        {{ props.row.caseno }}
-      </a>
-    </v-client-table>
+  <div class="container-fluid">
+    <PanelHeader panelTitle="Novel coronavirus (COVID-19) statistics" />
+    <div class="row">
+      <div class="col-xs-12">
+        <v-client-table :data="tableData" :columns="columns" :options="options">
+          <a
+            :href="props.row.source"
+            target="_blank"
+            slot="caseno"
+            slot-scope="props"
+            >{{ props.row.caseno }}</a
+          >
+        </v-client-table>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import PanelHeader from "./PanelHeader.vue";
+
 export default {
   name: "Table",
   data() {
@@ -27,12 +33,12 @@ export default {
           status: "Status",
           dateofdiagnosis: "Date of Diagnosis"
         },
-        texts:{
-          limit:"Cases pre page:",
-          page:"Page:",
-          filterBy:"Filter by {column}",
+        texts: {
+          limit: "Cases pre page:",
+          page: "Page:",
+          filterBy: "Filter by {column}"
         },
-        pagination: { 
+        pagination: {
           // dropdown: true,
         },
         // perPage: 25,
@@ -47,11 +53,11 @@ export default {
           ],
           status: [
             { id: "Admission", text: "Admission" },
-            { id: "Discharged", text: "Discharged" }
+            { id: "Recovered", text: "Recovered" }
           ]
         },
         dateColumns: ["dateofdiagnosis"],
-        // dateFormat: 'YYYY-MM-DD',
+        dateFormat: "DD/MM/YYYY",
         datepickerOptions: {
           // See http://www.daterangepicker.com/#options
           showDropdowns: true,
@@ -63,9 +69,7 @@ export default {
   props: {
     columns: {
       type: Array,
-      default: () => {
-        return null;
-      }
+      default: null
     },
     tableData: {
       type: Array,
@@ -74,7 +78,10 @@ export default {
       }
     }
   },
-  methods: {}
+  methods: {},
+  components: {
+    PanelHeader
+  }
 };
 </script>
 
