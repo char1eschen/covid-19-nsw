@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div>
     <PanelHeader panelTitle="Summary" />
 
     <div class="row">
@@ -41,7 +41,7 @@
     </div>
 
     <div class="row">
-      <table class="col-xs-8 col-xs-offset-2">
+      <table class="col-md-8 col-xs-12 col-md-offset-2">
         <thead>
           <tr class="tab-headings">
             <th class="col-xs-3 col-confirmed">Confirmed cases</th>

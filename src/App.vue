@@ -1,19 +1,44 @@
 <template>
   <div id="app">
-    <Loading
-      :active.sync="isLoading"
-      :can-cancel="true"
-      :loader="loader"
-      :is-full-page="fullPage"
-    />
-    <Header v-if="!isLoading" :updatedDate="updatedDate" />
-    <Summary v-if="!isLoading" :cases="cases" />
-    <LineChart
-      v-if="!isLoading"
-      :chartdata="chartData"
-      :options="chartOptions"
-    />
-    <Table v-if="!isLoading" :columns="columns" :tableData="tableData" />
+    <div class="container-fluid">
+      <Loading
+        :active.sync="isLoading"
+        :can-cancel="true"
+        :loader="loader"
+        :is-full-page="fullPage"
+      />
+
+      <div class="row">
+        <Header
+          class="col-xs-12"
+          v-if="!isLoading"
+          :updatedDate="updatedDate"
+        />
+      </div>
+
+      <Summary v-if="!isLoading" :cases="cases" />
+
+      <div class="row" v-if="!isLoading">
+        <PanelHeader panelTitle="Trending charts" />
+        <ComboBarLineChart
+          class="col-md-4"
+          :chartdata="comboChartData"
+          :options="comboChartOptions"
+        />
+        <BarChart
+          class="col-md-4"
+          :chartdata="barChartData"
+          :options="barChartOptions"
+        />
+        <DoughnutChart
+          class="col-md-4"
+          :chartdata="doughnutChartData"
+          :options="doughnutChartOptions"
+        />
+      </div>
+
+      <Table v-if="!isLoading" :columns="columns" :tableData="tableData" />
+    </div>
   </div>
 </template>
 
@@ -22,10 +47,14 @@ import axios from "axios";
 import moment from "moment";
 import Loading from "vue-loading-overlay";
 import Header from "./components/Header.vue";
+import PanelHeader from "./components/PanelHeader.vue";
 import Summary from "./components/Summary.vue";
-import LineChart from "./components/charts/LineChart";
+import ComboBarLineChart from "./components/charts/ComboBarLineChart";
+import DoughnutChart from "./components/charts/DoughnutChart";
+import BarChart from "./components/charts/BarChart";
 import Table from "./components/Table.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
+import { default as chartColors } from "./assets/utils";
 
 const token = "1SCaQqie7igxhaj6fK22oJmkz3xJlw_Snfp3jFqE2JhQ";
 export default {
@@ -42,8 +71,8 @@ export default {
       labels: [],
       dailyCases: [],
       totalCases: [],
-      chartData: null,
-      chartOptions: {
+      comboChartData: null,
+      comboChartOptions: {
         responsive: true,
         title: {
           display: true,
@@ -52,6 +81,32 @@ export default {
         tooltips: {
           mode: "index",
           intersect: true
+        }
+      },
+      doughnutChartData: null,
+      doughnutChartOptions: {
+        responsive: true,
+        legend: {
+          position: "top"
+        },
+        title: {
+          display: true,
+          text: "Chart.js Doughnut Chart"
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
+      },
+      barChartOptions: {
+        responsive: true,
+        legend: {
+          display: false,
+          position: "top"
+        },
+        title: {
+          display: true,
+          text: "Chart.js Bar Chart"
         }
       }
     };
@@ -122,40 +177,89 @@ export default {
           });
           this.cases = cases;
 
-          // filter chart data
-          let filteredData = this.chartDataFilter(this.tableData)
-          let chartLabels = []
-          let dailyCases = []
-          for(let item of filteredData) {
-            chartLabels.push(item.date)
-            dailyCases.push(item.lst.length)
+          // for combo bar-line chart
+          let comboChartData = this.chartDataFilter(
+            this.tableData,
+            "dateofdiagnosis",
+            "date"
+          );
+          let chartLabels = [];
+          let dailyCases = [];
+          for (let item of comboChartData) {
+            chartLabels.push(item.date);
+            dailyCases.push(item.lst.length);
           }
-          this.labels = chartLabels.reverse()
-          this.dailyCases = dailyCases.reverse()
-          this.totalCases = this.calculateTotal(this.dailyCases)
-          console.log('bar charts', this.labels, this.dailyCases, this.totalCases)
-
-          this.chartData = {
+          this.labels = chartLabels.reverse();
+          this.dailyCases = dailyCases.reverse();
+          this.totalCases = this.calculateTotal(this.dailyCases);
+          this.comboChartData = {
             labels: this.labels,
             datasets: [
               {
                 type: "line",
                 label: "Confirmed cases",
-                borderColor: "rgba(255, 0, 0, 0.5)",
+                borderColor: chartColors.red,
                 borderWidth: 2,
                 fill: false,
+                // yAxisID: 'left',
                 data: this.totalCases
               },
               {
                 type: "bar",
                 label: "Daily new cases",
-                backgroundColor: "rgb(153,153,153)",
-                data: this.dailyCases,
+                backgroundColor: chartColors.darkGrey,
                 borderColor: "white",
-                borderWidth: 2
+                borderWidth: 2,
+                // yAxisID: 'right',
+                data: this.dailyCases
               }
             ]
+          };
+
+          // for doughnut chart
+          let doughnutChartData = this.chartDataFilter(
+            this.tableData,
+            "originate",
+            "originate"
+          );
+          let doughnutLabels = [];
+          let countryData = [];
+          let doughnutBackground = [];
+          for (let item of doughnutChartData) {
+            if (item.originate !== "Local" && item.originate !== "Unknown") {
+              doughnutLabels.push(item.originate);
+              countryData.push(item.lst.length);
+              doughnutBackground.push(this.dynamicColors());
+            }
           }
+          console.log(
+            "doughnutChartData",
+            doughnutLabels,
+            countryData,
+            doughnutBackground
+          );
+          this.barChartData = {
+            labels: doughnutLabels,
+            datasets: [
+              {
+                label: "Dataset 1",
+                backgroundColor: chartColors.darkGrey,
+                borderColor: "white",
+                borderWidth: 2,
+                data: countryData
+              }
+            ]
+          };
+          this.doughnutChartData = {
+            datasets: [
+              {
+                data: countryData,
+                backgroundColor: doughnutBackground,
+                label: "Dataset 1"
+              }
+            ],
+            labels: doughnutLabels
+          };
         })
         .catch(error => {
           // handle error
@@ -165,28 +269,29 @@ export default {
           // always executed
         });
     },
-    chartDataFilter(val) {
+    chartDataFilter(val, key, newKey) {
       const map = {};
       const dest = [];
       let data = JSON.parse(JSON.stringify(val));
-      data.forEach(item => {
-        if (item.dateofdiagnosis) {
-          item.dateofdiagnosis = moment(
-            item.dateofdiagnosis.toString()
-          ).format("DD MMM");
-        }
-      });
+      // if lable is date, covert format
+      if (key === "dateofdiagnosis") {
+        data.forEach(item => {
+          if (item[key]) {
+            item[key] = moment(item[key].toString()).format("DD MMM");
+          }
+        });
+      }
 
       data.forEach(item => {
-        if (!map[item.dateofdiagnosis]) {
+        if (!map[item[key]]) {
           dest.push({
-            date: item.dateofdiagnosis,
+            [newKey]: item[key],
             lst: [item]
           });
-          map[item.dateofdiagnosis] = item;
+          map[item[key]] = item;
         } else {
           dest.forEach(it => {
-            if (it.date === item.dateofdiagnosis) {
+            if (it[newKey] === item[key]) {
               it.lst.push(item);
             }
           });
@@ -197,17 +302,26 @@ export default {
     calculateTotal(arr) {
       let result = [];
       let value = 0;
-      arr.forEach(item=> {
+      arr.forEach(item => {
         value = value + item;
-        result.push(value)
-      })
-      return result
+        result.push(value);
+      });
+      return result;
+    },
+    dynamicColors() {
+      let r = Math.floor(Math.random() * 255);
+      let g = Math.floor(Math.random() * 255);
+      let b = Math.floor(Math.random() * 255);
+      return "rgb(" + r + "," + g + "," + b + ")";
     }
   },
   components: {
     Header,
+    PanelHeader,
     Summary,
-    LineChart,
+    ComboBarLineChart,
+    DoughnutChart,
+    BarChart,
     Table,
     Loading
   }

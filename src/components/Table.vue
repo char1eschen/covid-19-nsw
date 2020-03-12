@@ -28,6 +28,7 @@ export default {
         headings: {
           caseno: "Case No.",
           details: "Details",
+          gender: "Gender",
           travelledoverseas: "Travelled Overseas",
           originate: "Originate",
           status: "Status",
@@ -46,6 +47,10 @@ export default {
         filterByColumn: true,
         filterable: true,
         listColumns: {
+          gender: [
+            { id: "Male", text: "Male" },
+            { id: "Female", text: "Female" }
+          ],
           travelledoverseas: [
             { id: "Yes", text: "Yes" },
             { id: "No", text: "No" }

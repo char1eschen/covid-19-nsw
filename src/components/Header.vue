@@ -1,11 +1,7 @@
 <template>
-  <header class="container-fluid">
-    <div class="row">
-      <div class="col-xs-12">
-        <h1>NSW Coronavirus (COVID-19) statistics</h1>
-        <small>Updated on {{ updatedDate }} AEDT</small>
-      </div>
-    </div>
+  <header>
+    <h1>NSW Coronavirus (COVID-19) statistics</h1>
+    <small>Updated on {{ updatedDate }} AEDT</small>
   </header>
 </template>
 
