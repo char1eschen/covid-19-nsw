@@ -29,8 +29,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="stylus">
-// .panelHeader {
-//   padding-right: 20px;
-//   padding-left: 20px;
-// }
+.panelHeader
+  float: left
+  h2
+    font-size: 2rem
+    text-align: initial
 </style>

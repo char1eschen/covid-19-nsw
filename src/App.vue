@@ -1,61 +1,69 @@
 <template>
   <div id="app">
     <div class="container-fluid">
-      <Loading
-        :active.sync="isLoading"
-        :can-cancel="true"
-        :loader="loader"
-        :is-full-page="fullPage"
-      />
-
       <div class="row">
-        <Header
-          class="col-xs-12"
-          v-if="!isLoading"
-          :updatedDate="updatedDate"
-        />
+        <div class="col-md-10 col-md-offset-1">
+          <Loading
+            :active.sync="isLoading"
+            :can-cancel="true"
+            :loader="loader"
+            :is-full-page="fullPage"
+          />
+
+          <div class="row">
+            <Header
+              class="col-xs-12"
+              v-if="!isLoading"
+              :updatedDate="updatedDate"
+            />
+          </div>
+
+          <Summary
+            v-if="!isLoading"
+            :cases="cases"
+            :incrementCases="incrementCases"
+            :statistics="statistics"
+          />
+
+          <div class="container-fluid panel">
+            <div class="row" v-if="!isLoading">
+              <PanelHeader class="col-xs-12" panelTitle="Statistics charts" />
+              <ComboBarLineChart
+                class="col-md-4 mb-15"
+                :chartdata="comboChartData"
+                :options="comboChartOptions"
+              />
+              <ComboBarLineChart
+                class="col-md-4 mb-15"
+                :chartdata="statisticsChartData"
+                :options="statisticsChartOptions"
+              />
+              <HorizontalBarChart
+                class="col-md-4 mb-15"
+                :chartdata="horizontalbarChartData"
+                :options="horizontalbarChartOptions"
+              />
+            </div>
+
+            <div class="row" v-if="!isLoading">
+              <DoughnutChart
+                class="col-md-4 mb-20"
+                :chartdata="doughnutChartData"
+                :options="doughnutChartOptions"
+              />
+              <DoughnutChart
+                class="col-md-4 mb-20"
+                :chartdata="ageGroupChartData"
+                :options="ageGroupChartOptions"
+              />
+            </div>
+          </div>
+
+          <Table v-if="!isLoading" :columns="columns" :tableData="tableData" />
+
+          <Footer v-if="!isLoading" />
+        </div>
       </div>
-
-      <Summary
-        v-if="!isLoading"
-        :cases="cases"
-        :incrementCases="incrementCases"
-        :statistics="statistics"
-      />
-
-      <div class="row" v-if="!isLoading">
-        <PanelHeader panelTitle="Statistics charts" />
-        <ComboBarLineChart
-          class="col-md-4"
-          :chartdata="comboChartData"
-          :options="comboChartOptions"
-        />
-        <ComboBarLineChart
-          class="col-md-4"
-          :chartdata="statisticsChartData"
-          :options="statisticsChartOptions"
-        />
-        <HorizontalBarChart
-          class="col-md-4"
-          :chartdata="horizontalbarChartData"
-          :options="horizontalbarChartOptions"
-        />
-      </div>
-
-      <div class="row" v-if="!isLoading">
-        <DoughnutChart
-          class="col-md-4"
-          :chartdata="doughnutChartData"
-          :options="doughnutChartOptions"
-        />
-        <DoughnutChart
-          class="col-md-4"
-          :chartdata="ageGroupChartData"
-          :options="ageGroupChartOptions"
-        />
-      </div>
-
-      <Table v-if="!isLoading" :columns="columns" :tableData="tableData" />
     </div>
   </div>
 </template>
@@ -71,6 +79,7 @@ import ComboBarLineChart from "./components/charts/ComboBarLineChart";
 import DoughnutChart from "./components/charts/DoughnutChart";
 import HorizontalBarChart from "./components/charts/HorizontalBarChart";
 import Table from "./components/Table.vue";
+import Footer from "./components/Footer.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
 import { chartColors } from "./assets/utils";
 
@@ -397,7 +406,6 @@ export default {
             ageGroupChartData.push(ageMap[key]);
             ageGroutChartLabels.push(key);
           }
-          console.log(ageGroutChartLabels, ageGroupChartData);
           this.ageGroupChartData = {
             datasets: [
               {
@@ -551,12 +559,13 @@ export default {
     DoughnutChart,
     HorizontalBarChart,
     Table,
+    Footer,
     Loading
   }
 };
 </script>
 
-<style>
+<style lang="stylus">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -565,4 +574,22 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+.panel {
+  position: relative;
+  background: #f9f9f9;
+  margin: 0 0 25px 0;
+  border: none;
+  padding: 0 20px;
+  box-shadow: 0 0 6px 0 rgba(0,0,0,.2);
+  border-radius: 4px;
+}
+hr
+  margin-top: 10px
+.mb-15
+  margin-bottom: 15px
+
+.mb-20
+  margin-bottom: 20px
+.mt-10
+  margin-top: 10px
 </style>

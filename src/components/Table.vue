@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid panel">
     <PanelHeader panelTitle="Novel coronavirus (COVID-19) statistics" />
     <div class="row">
       <div class="col-xs-12">
@@ -91,4 +91,4 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped lang="stylus"></style>

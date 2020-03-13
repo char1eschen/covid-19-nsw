@@ -22,4 +22,13 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped lang="stylus">
+header {
+  padding: 0 15px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+h1 {
+ font-size: 2.5rem
+}
+</style>
