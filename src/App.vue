@@ -16,24 +16,42 @@
         />
       </div>
 
-      <Summary v-if="!isLoading" :cases="cases" />
+      <Summary
+        v-if="!isLoading"
+        :cases="cases"
+        :incrementCases="incrementCases"
+        :statistics="statistics"
+      />
 
       <div class="row" v-if="!isLoading">
-        <PanelHeader panelTitle="Trending charts" />
+        <PanelHeader panelTitle="Statistics charts" />
         <ComboBarLineChart
           class="col-md-4"
           :chartdata="comboChartData"
           :options="comboChartOptions"
         />
-        <BarChart
+        <ComboBarLineChart
           class="col-md-4"
-          :chartdata="barChartData"
-          :options="barChartOptions"
+          :chartdata="statisticsChartData"
+          :options="statisticsChartOptions"
         />
+        <HorizontalBarChart
+          class="col-md-4"
+          :chartdata="horizontalbarChartData"
+          :options="horizontalbarChartOptions"
+        />
+      </div>
+
+      <div class="row" v-if="!isLoading">
         <DoughnutChart
           class="col-md-4"
           :chartdata="doughnutChartData"
           :options="doughnutChartOptions"
+        />
+        <DoughnutChart
+          class="col-md-4"
+          :chartdata="ageGroupChartData"
+          :options="ageGroupChartOptions"
         />
       </div>
 
@@ -51,23 +69,28 @@ import PanelHeader from "./components/PanelHeader.vue";
 import Summary from "./components/Summary.vue";
 import ComboBarLineChart from "./components/charts/ComboBarLineChart";
 import DoughnutChart from "./components/charts/DoughnutChart";
-import BarChart from "./components/charts/BarChart";
+import HorizontalBarChart from "./components/charts/HorizontalBarChart";
 import Table from "./components/Table.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
-import { default as chartColors } from "./assets/utils";
+import { chartColors } from "./assets/utils";
 
-const token = "1SCaQqie7igxhaj6fK22oJmkz3xJlw_Snfp3jFqE2JhQ";
+const TABLETOKEN = "1SCaQqie7igxhaj6fK22oJmkz3xJlw_Snfp3jFqE2JhQ";
+const SUMMARYTOKEN = "1rvShbFWteDikTBV6tZaA7TWY2xQrTzB-mSqFJoXcFAc";
+
 export default {
   name: "App",
   data() {
     return {
-      isLoading: true,
+      summaryDataLoading: true,
+      tableDataLoading: true,
       loader: "dots",
       fullPage: true,
+      statistics: null,
       columns: null,
       tableData: [],
       updatedDate: "",
       cases: null,
+      incrementCases: null,
       labels: [],
       dailyCases: [],
       totalCases: [],
@@ -91,14 +114,15 @@ export default {
         },
         title: {
           display: true,
-          text: "Chart.js Doughnut Chart"
+          text: "Gender statistics"
         },
         animation: {
           animateScale: true,
           animateRotate: true
         }
       },
-      barChartOptions: {
+      horizontalbarChartData: null,
+      horizontalbarChartOptions: {
         responsive: true,
         legend: {
           display: false,
@@ -106,27 +130,74 @@ export default {
         },
         title: {
           display: true,
-          text: "Chart.js Bar Chart"
+          text: "Imported cases from overseas"
+        }
+      },
+      statisticsChartData: null,
+      statisticsChartOptions: {
+        responsive: true,
+        title: {
+          display: true,
+          text: "Under investigation and excluded cases (Last 21 days)"
+        },
+        tooltips: {
+          mode: "index",
+          intersect: true
+        },
+        scales: {
+          y: {
+            type: "linear",
+            display: true,
+            position: "left"
+          },
+          y1: {
+            type: "linear",
+            display: true,
+            position: "right",
+            gridLines: {
+              drawOnChartArea: false
+            }
+          }
+        }
+      },
+      ageGroupChartData: null,
+      ageGroupChartOptions: {
+        responsive: true,
+        legend: {
+          position: "top"
+        },
+        title: {
+          display: true,
+          text: "Age group statistics"
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true
         }
       }
     };
   },
   mounted() {
+    this.getSummaryData();
     this.getData();
+  },
+  computed: {
+    isLoading: function() {
+      return this.summaryDataLoading || this.tableDataLoading;
+    }
   },
   methods: {
     getData() {
       axios
         .get(
-          `https://spreadsheets.google.com/feeds/list/${token}/od6/public/values?alt=json`
+          `https://spreadsheets.google.com/feeds/list/${TABLETOKEN}/od6/public/values?alt=json`
         )
         .then(response => {
-          // handle success
-          this.isLoading = false;
           let columns = [];
           let entryData = response.data.feed.entry;
           let updated = response.data.feed.updated["$t"];
-          // set table data
+
+          // table data
           entryData.forEach(item => {
             let itemObj = {};
             Object.keys(item).forEach(key => {
@@ -145,7 +216,7 @@ export default {
           });
           this.updatedDate = moment(updated).format("Do MMM YYYY, hh:mm:ss");
 
-          // set table columns
+          // table columns
           if (this.tableData[0]) {
             Object.keys(this.tableData[0]).forEach(key => {
               if (key !== "source") {
@@ -155,14 +226,18 @@ export default {
           }
           this.columns = columns;
 
-          // set summary data
+          // summary data
           let cases = {
             total: this.tableData.length,
             confirmed: 0,
             recovered: 0,
             death: 0
           };
+          let previousDayData = [];
           this.tableData.map(item => {
+            if (moment().isSame(item.dateofdiagnosis, "day")) {
+              previousDayData.push(item);
+            }
             switch (item.status) {
               case "Confirmed":
                 cases.confirmed++;
@@ -177,7 +252,29 @@ export default {
           });
           this.cases = cases;
 
-          // for combo bar-line chart
+          // previous day compare
+          let incrementCases = {
+            total: previousDayData.length,
+            confirmed: 0,
+            recovered: 0,
+            death: 0
+          };
+          previousDayData.map(item => {
+            switch (item.status) {
+              case "Confirmed":
+                incrementCases.confirmed++;
+                break;
+              case "Recovered":
+                incrementCases.recovered++;
+                break;
+              case "Death":
+                incrementCases.death++;
+                break;
+            }
+          });
+          this.incrementCases = incrementCases;
+
+          // total confirmed cases and daily new cases chart
           let comboChartData = this.chartDataFilter(
             this.tableData,
             "dateofdiagnosis",
@@ -199,9 +296,9 @@ export default {
                 type: "line",
                 label: "Confirmed cases",
                 borderColor: chartColors.red,
+                backgroundColor: "rgba(0, 0, 0, 0)",
                 borderWidth: 2,
                 fill: false,
-                // yAxisID: 'left',
                 data: this.totalCases
               },
               {
@@ -210,39 +307,30 @@ export default {
                 backgroundColor: chartColors.darkGrey,
                 borderColor: "white",
                 borderWidth: 2,
-                // yAxisID: 'right',
                 data: this.dailyCases
               }
             ]
           };
 
-          // for doughnut chart
-          let doughnutChartData = this.chartDataFilter(
+          // imported cases from overseas chart
+          let overseasChartData = this.chartDataFilter(
             this.tableData,
             "originate",
             "originate"
           );
-          let doughnutLabels = [];
+          let overseasLabels = [];
           let countryData = [];
-          let doughnutBackground = [];
-          for (let item of doughnutChartData) {
+          for (let item of overseasChartData) {
             if (item.originate !== "Local" && item.originate !== "Unknown") {
-              doughnutLabels.push(item.originate);
+              overseasLabels.push(item.originate);
               countryData.push(item.lst.length);
-              doughnutBackground.push(this.dynamicColors());
             }
           }
-          console.log(
-            "doughnutChartData",
-            doughnutLabels,
-            countryData,
-            doughnutBackground
-          );
-          this.barChartData = {
-            labels: doughnutLabels,
+          this.horizontalbarChartData = {
+            labels: overseasLabels,
             datasets: [
               {
-                label: "Dataset 1",
+                label: "Comfirmed cases",
                 backgroundColor: chartColors.darkGrey,
                 borderColor: "white",
                 borderWidth: 2,
@@ -250,16 +338,155 @@ export default {
               }
             ]
           };
+
+          // gender statistics
+          let genderData = this.chartDataFilter(
+            this.tableData,
+            "gender",
+            "gender"
+          );
+          let genderChartLabels = ["Male", "Female"];
+          let genderChartData = [];
+          for (let item of genderData) {
+            if (item.gender === genderChartLabels[0]) {
+              genderChartData[0] = item.lst.length;
+            } else {
+              genderChartData[1] = item.lst.length;
+            }
+          }
           this.doughnutChartData = {
             datasets: [
               {
-                data: countryData,
-                backgroundColor: doughnutBackground,
-                label: "Dataset 1"
+                data: genderChartData,
+                backgroundColor: [chartColors.blue, chartColors.red]
               }
             ],
-            labels: doughnutLabels
+            labels: genderChartLabels
           };
+
+          // age group statistics
+          let ageData = JSON.parse(JSON.stringify(this.tableData));
+          let ageMap = {
+            "0s": 0,
+            "10s": 0,
+            "20s": 0,
+            "30s": 0,
+            "40s": 0,
+            "50s": 0,
+            "60s": 0,
+            "70s": 0,
+            "80s": 0,
+            "90s": 0
+          };
+          let ageGroupChartData = [];
+          let ageGroutChartLabels = [];
+          ageData.forEach(item => {
+            if (item.age.includes("s")) {
+              item.age = parseInt(item.age.replace(/s/gi, ""));
+            } else {
+              item.age = parseInt(item.age);
+            }
+            if (item.age < 10) {
+              ageMap["0s"]++;
+            } else {
+              let key = parseInt((item.age % 100) / 10) * 10 + "s";
+              ageMap[key]++;
+            }
+          });
+          for (let key in ageMap) {
+            ageGroupChartData.push(ageMap[key]);
+            ageGroutChartLabels.push(key);
+          }
+          console.log(ageGroutChartLabels, ageGroupChartData);
+          this.ageGroupChartData = {
+            datasets: [
+              {
+                data: ageGroupChartData,
+                backgroundColor: [
+                  chartColors.yellow,
+                  chartColors.orange,
+                  chartColors.red,
+                  chartColors.darkRed,
+                  chartColors.green,
+                  chartColors.blue,
+                  chartColors.darkBlue,
+                  chartColors.purple,
+                  chartColors.grey,
+                  chartColors.darkGrey
+                ]
+              }
+            ],
+            labels: ageGroutChartLabels
+          };
+          this.tableDataLoading = false;
+        })
+        .catch(error => {
+          // handle error
+          console.log(error);
+        })
+        .finally(() => {
+          // always executed
+        });
+    },
+    getSummaryData() {
+      axios
+        .get(
+          `https://spreadsheets.google.com/feeds/list/${SUMMARYTOKEN}/od6/public/values?alt=json`
+        )
+        .then(response => {
+          let entryData = response.data.feed.entry;
+          let summaryData = [];
+          // under investigation and excluded cases
+          entryData.forEach(item => {
+            let itemObj = {};
+            Object.keys(item).forEach(key => {
+              if (key.includes("gsx$")) {
+                if (key.substring(4) === "date") {
+                  itemObj[key.substring(4)] = moment(
+                    item[key]["$t"],
+                    "DD/MM/YYYY"
+                  )
+                    .format("DD MMM")
+                    .toString();
+                } else {
+                  itemObj[key.substring(4)] = parseInt(item[key]["$t"]);
+                }
+              }
+            });
+            summaryData.push(itemObj);
+          });
+          this.statistics = summaryData.splice(-2);
+          let underinvestigation = [];
+          let excluded = [];
+          let summaryLabels = [];
+          summaryData.forEach(item => {
+            this.addValToArr(item.underinvestigation, underinvestigation);
+            this.addValToArr(item.testedandexcluded, excluded);
+            this.addValToArr(item.date, summaryLabels);
+          });
+          this.statisticsChartData = {
+            labels: summaryLabels.slice(-21),
+            datasets: [
+              {
+                type: "line",
+                label: "Excluded cases",
+                borderColor: chartColors.blue,
+                borderWidth: 2,
+                backgroundColor: "rgba(0, 0, 0, 0)",
+                fill: false,
+                data: excluded.slice(-21),
+                yAxisID: "y"
+              },
+              {
+                type: "bar",
+                label: "Investigated cases",
+                backgroundColor: chartColors.darkGrey,
+                data: underinvestigation.slice(-21),
+                yAxisID: "y1"
+              }
+            ]
+          };
+          this.summaryDataLoading = false;
         })
         .catch(error => {
           // handle error
@@ -308,11 +535,12 @@ export default {
       });
       return result;
     },
-    dynamicColors() {
-      let r = Math.floor(Math.random() * 255);
-      let g = Math.floor(Math.random() * 255);
-      let b = Math.floor(Math.random() * 255);
-      return "rgb(" + r + "," + g + "," + b + ")";
+    addValToArr(val, arr) {
+      if (val) {
+        arr.push(val);
+      } else {
+        arr.push(null);
+      }
     }
   },
   components: {
@@ -321,7 +549,7 @@ export default {
     Summary,
     ComboBarLineChart,
     DoughnutChart,
-    BarChart,
+    HorizontalBarChart,
     Table,
     Loading
   }

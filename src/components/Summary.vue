@@ -14,55 +14,86 @@
     </div>
 
     <div class="row">
-      <div class="col-xs-3">
-        <div class="summaryPanel total">
-          <p class="number">{{ cases.total }}</p>
-          <p class="text">Confirmed</p>
-        </div>
-      </div>
-      <div class="col-xs-3">
+      <div class="col-xs-4">
         <div class="summaryPanel confirmed">
+          <p v-if="incrementCases.confirmed !== 0">
+            Compared to yesterday
+            <em
+              >{{ prefix(incrementCases.confirmed)
+              }}{{ incrementCases.confirmed }}</em
+            >
+          </p>
+          <p v-else>No increment</p>
           <p class="number">{{ cases.confirmed }}</p>
-          <p class="text">Remains</p>
+          <p class="text">Existing confirmed</p>
         </div>
       </div>
-      <div class="col-xs-3">
+      <div class="col-xs-4">
         <div class="summaryPanel recovered">
+          <p v-if="incrementCases.recovered !== 0">
+            Compared to yesterday
+            <em
+              >{{ prefix(incrementCases.recovered)
+              }}{{ incrementCases.recovered }}</em
+            >
+          </p>
+          <p v-else>No increment</p>
           <p class="number">{{ cases.recovered }}</p>
-          <p class="text">recoveries</p>
+          <p class="text">Recoveries</p>
         </div>
       </div>
-      <div class="col-xs-3">
+      <div class="col-xs-4">
         <div class="summaryPanel death">
+          <p v-if="incrementCases.death !== 0">
+            Compared to yesterday
+            <em
+              >{{ prefix(incrementCases.death) }}{{ incrementCases.death }}</em
+            >
+          </p>
+          <p v-else>No increment</p>
           <p class="number">{{ cases.death }}</p>
           <p class="text">Deaths</p>
         </div>
       </div>
     </div>
-
     <div class="row">
-      <table class="col-md-8 col-xs-12 col-md-offset-2">
-        <thead>
-          <tr class="tab-headings">
-            <th class="col-xs-3 col-confirmed">Confirmed cases</th>
-            <th class="col-xs-3 col-investigation">
-              Cases under investigation
-            </th>
-            <th class="col-xs-3 col-excluded">Cases tested and excluded</th>
-            <th class="col-xs-3 col-total">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in items" :key="item.index">
-            <td class="col-xs-3 col-confirmed">{{ item.confirmed }}</td>
-            <td class="col-xs-3 col-investigation">
-              {{ item.investigation }}
-            </td>
-            <td class="col-xs-3 col-excluded">{{ item.excluded }}</td>
-            <td class="col-xs-3 col-total">{{ item.total }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="col-xs-4">
+        <div class="summaryPanel total">
+          <p v-if="incrementCases.total !== 0">
+            Compared to yesterday
+            <em
+              >{{ prefix(incrementCases.total) }}{{ incrementCases.total }}</em
+            >
+          </p>
+          <p v-else>No increment</p>
+          <p class="number">{{ cases.total }}</p>
+          <p class="text">Total confirmed</p>
+        </div>
+      </div>
+      <div class="col-xs-4">
+        <div class="summaryPanel confirmed">
+          <p v-if="investigatedIncrease !== 0">
+            Compared to yesterday
+            <em
+              >{{ prefix(investigatedIncrease) }}{{ investigatedIncrease }}</em
+            >
+          </p>
+          <p v-else>No increment</p>
+          <p class="number">{{ statistics[1].underinvestigation }}</p>
+          <p class="text">Investigated</p>
+        </div>
+      </div>
+      <div class="col-xs-4">
+        <div class="summaryPanel recovered">
+          <p v-if="excludedIncrease !== 0">
+            Compared to yesterday
+            <em>{{ prefix(excludedIncrease) }}{{ excludedIncrease }}</em>
+          </p>
+          <p v-else>No increment</p>
+          <p class="number">{{ statistics[1].testedandexcluded }}</p>
+          <p class="text">Excluded</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -71,25 +102,45 @@
 import PanelHeader from "./PanelHeader.vue";
 export default {
   name: "Summary",
-  data() {
-    return {
-      items: [
-        {
-          confirmed: 65,
-          investigation: 1004,
-          excluded: 9152,
-          total: 10221
-        }
-      ]
-    };
+  computed: {
+    investigatedIncrease() {
+      return (
+        this.statistics[1].underinvestigation -
+        this.statistics[0].underinvestigation
+      );
+    },
+    excludedIncrease() {
+      return (
+        this.statistics[1].testedandexcluded -
+        this.statistics[0].testedandexcluded
+      );
+    }
   },
   props: {
     cases: {
       type: Object,
       default: null
+    },
+    incrementCases: {
+      type: Object,
+      default: null
+    },
+    statistics: {
+      type: Array,
+      default: null
     }
   },
-  methods: {},
+  methods: {
+    prefix(val) {
+      if (val !== 0) {
+        if (val > 0) {
+          return "+";
+        } else {
+          return "-";
+        }
+      }
+    }
+  },
   components: {
     PanelHeader
   }
