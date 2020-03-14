@@ -57,8 +57,9 @@ export default {
             // { id: "Unknow", text: "Unknown", hide: true }
           ],
           status: [
-            { id: "Admission", text: "Admission" },
-            { id: "Recovered", text: "Recovered" }
+            { id: "Confirmed", text: "Confirmed" },
+            { id: "Recovered", text: "Recovered" },
+            { id: "Death", text: "Death" }
           ]
         },
         dateColumns: ["dateofdiagnosis"],
