@@ -167,8 +167,6 @@ export default {
       if (val !== 0) {
         if (val > 0) {
           return "+";
-        } else {
-          return "-";
         }
       }
     }
