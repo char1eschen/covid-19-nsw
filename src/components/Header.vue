@@ -1,7 +1,7 @@
 <template>
   <header>
     <h1>NSW Coronavirus (COVID-19) statistics</h1>
-    <small>Updated on {{ updatedDate }} AEDT</small>
+    <small>Updated on {{ updatedDate }}</small>
   </header>
 </template>
 

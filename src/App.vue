@@ -20,6 +20,7 @@
 
           <Summary
             v-if="!isLoading"
+            :updatedDate="updatedDate"
             :cases="cases"
             :incrementCases="incrementCases"
             :statistics="statistics"
@@ -29,17 +30,17 @@
             <div class="row" v-if="!isLoading">
               <PanelHeader class="col-xs-12" panelTitle="Statistics charts" />
               <ComboBarLineChart
-                class="col-md-4 mb-15"
+                class="col-sm-4 mb-15"
                 :chartdata="comboChartData"
                 :options="comboChartOptions"
               />
               <ComboBarLineChart
-                class="col-md-4 mb-15"
+                class="col-sm-4 mb-15"
                 :chartdata="statisticsChartData"
                 :options="statisticsChartOptions"
               />
               <HorizontalBarChart
-                class="col-md-4 mb-15"
+                class="col-sm-4 mb-15"
                 :chartdata="horizontalbarChartData"
                 :options="horizontalbarChartOptions"
               />
@@ -47,12 +48,17 @@
 
             <div class="row" v-if="!isLoading">
               <DoughnutChart
-                class="col-md-4 mb-20"
+                class="col-sm-4 mb-20"
                 :chartdata="doughnutChartData"
                 :options="doughnutChartOptions"
               />
               <DoughnutChart
-                class="col-md-4 mb-20"
+                class="col-sm-4 mb-20"
+                :chartdata="originChartData"
+                :options="originChartOptions"
+              />
+              <DoughnutChart
+                class="col-sm-4 mb-20"
                 :chartdata="ageGroupChartData"
                 :options="ageGroupChartOptions"
               />
@@ -183,6 +189,21 @@ export default {
           animateScale: true,
           animateRotate: true
         }
+      },
+      originChartData: null,
+      originChartOptions: {
+        responsive: true,
+        legend: {
+          position: "top"
+        },
+        title: {
+          display: true,
+          text: "Origin statistics"
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
       }
     };
   },
@@ -204,7 +225,7 @@ export default {
         .then(response => {
           let columns = [];
           let entryData = response.data.feed.entry;
-          let updated = response.data.feed.updated["$t"];
+          // let updated = response.data.feed.updated["$t"];
 
           // table data
           entryData.forEach(item => {
@@ -223,10 +244,13 @@ export default {
             });
             this.tableData.push(itemObj);
           });
-          this.updatedDate = moment(updated).format("Do MMM YYYY, hh:mm:ss");
+          // this.updatedDate = moment(updated).format("Do MMM YYYY, hh:mm:ss");
 
           // table columns
           if (this.tableData[0]) {
+            this.updatedDate = this.tableData[0].dateofdiagnosis.format(
+              "Do MMM YYYY"
+            );
             Object.keys(this.tableData[0]).forEach(key => {
               if (key !== "source") {
                 columns.push(key);
@@ -321,17 +345,17 @@ export default {
             ]
           };
 
-          // imported cases from overseas chart
+          // imported cases from overseas chart & origin statistics
           let overseasChartData = this.chartDataFilter(
             this.tableData,
-            "originate",
-            "originate"
+            "origin",
+            "origin"
           );
           let overseasLabels = [];
           let countryData = [];
           for (let item of overseasChartData) {
-            if (item.originate !== "Local" && item.originate !== "Unknown") {
-              overseasLabels.push(item.originate);
+            if (item.origin !== "Local" && item.origin !== "Unknown") {
+              overseasLabels.push(item.origin);
               countryData.push(item.lst.length);
             }
           }
@@ -348,6 +372,30 @@ export default {
             ]
           };
 
+          let originChartLabels = ["Overseas", "Local", "Unknown"];
+          let originChartData = [this.sum(countryData), 0, 0];
+          for (let item of overseasChartData) {
+            if (item.origin === "Local") {
+              originChartData[1] = item.lst.length;
+            } else if (item.origin === "Unknown") {
+              originChartData[2] = item.lst.length;
+            }
+          }
+
+          this.originChartData = {
+            datasets: [
+              {
+                data: originChartData,
+                backgroundColor: [
+                  chartColors.red,
+                  chartColors.orange,
+                  chartColors.blue
+                ]
+              }
+            ],
+            labels: originChartLabels
+          };
+
           // gender statistics
           let genderData = this.chartDataFilter(
             this.tableData,
@@ -359,7 +407,7 @@ export default {
           for (let item of genderData) {
             if (item.gender === genderChartLabels[0]) {
               genderChartData[0] = item.lst.length;
-            } else {
+            } else if (item.gender === genderChartLabels[1]) {
               genderChartData[1] = item.lst.length;
             }
           }
@@ -426,6 +474,7 @@ export default {
             ],
             labels: ageGroutChartLabels
           };
+
           this.tableDataLoading = false;
         })
         .catch(error => {
@@ -549,6 +598,11 @@ export default {
       } else {
         arr.push(null);
       }
+    },
+    sum(arr) {
+      return arr.reduce(function(prev, curr) {
+        return prev + curr;
+      });
     }
   },
   components: {

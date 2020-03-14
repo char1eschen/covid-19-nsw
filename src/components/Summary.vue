@@ -5,7 +5,7 @@
     <div class="row">
       <div class="col-xs-12">
         <p class="intro">
-          As on 11 March 2020, we have {{ cases.total }} confirmed cases of
+          As on {{ updatedDate }}, we have {{ cases.total }} confirmed cases of
           coronavirus (COVID-19), including {{ cases.confirmed }} active cases,
           {{ cases.recovered }} recoveries and {{ cases.death }} deaths, in NSW.
         </p>
@@ -145,6 +145,10 @@ export default {
     }
   },
   props: {
+    updatedDate: {
+      type: String,
+      default: null
+    },
     cases: {
       type: Object,
       default: null

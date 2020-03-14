@@ -30,7 +30,7 @@ export default {
           details: "Details",
           gender: "Gender",
           travelledoverseas: "Travelled Overseas",
-          originate: "Originate",
+          origin: "Origin",
           status: "Status",
           dateofdiagnosis: "Date of Diagnosis"
         },
