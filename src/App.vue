@@ -134,6 +134,28 @@ export default {
         animation: {
           animateScale: true,
           animateRotate: true
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let allData = data.datasets[tooltipItem.datasetIndex].data;
+              let tooltipLabel = data.labels[tooltipItem.index];
+              let tooltipData = allData[tooltipItem.index];
+              let total = 0;
+              for (let i in allData) {
+                total += parseFloat(allData[i]);
+              }
+              let tooltipPercentage = Math.round((tooltipData / total) * 100);
+              return (
+                tooltipLabel +
+                ": " +
+                tooltipData +
+                " (" +
+                tooltipPercentage +
+                "%)"
+              );
+            }
+          }
         }
       },
       horizontalbarChartData: null,
@@ -146,6 +168,28 @@ export default {
         title: {
           display: true,
           text: "Imported cases from overseas"
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let allData = data.datasets[tooltipItem.datasetIndex].data;
+              let tooltipLabel = data.labels[tooltipItem.index];
+              let tooltipData = allData[tooltipItem.index];
+              let total = 0;
+              for (let i in allData) {
+                total += parseFloat(allData[i]);
+              }
+              let tooltipPercentage = Math.round((tooltipData / total) * 100);
+              return (
+                tooltipLabel +
+                ": " +
+                tooltipData +
+                " (" +
+                tooltipPercentage +
+                "%)"
+              );
+            }
+          }
         }
       },
       statisticsChartData: null,
@@ -188,6 +232,28 @@ export default {
         animation: {
           animateScale: true,
           animateRotate: true
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let allData = data.datasets[tooltipItem.datasetIndex].data;
+              let tooltipLabel = data.labels[tooltipItem.index];
+              let tooltipData = allData[tooltipItem.index];
+              let total = 0;
+              for (let i in allData) {
+                total += parseFloat(allData[i]);
+              }
+              let tooltipPercentage = Math.round((tooltipData / total) * 100);
+              return (
+                tooltipLabel +
+                ": " +
+                tooltipData +
+                " (" +
+                tooltipPercentage +
+                "%)"
+              );
+            }
+          }
         }
       },
       originChartData: null,
@@ -203,6 +269,28 @@ export default {
         animation: {
           animateScale: true,
           animateRotate: true
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let allData = data.datasets[tooltipItem.datasetIndex].data;
+              let tooltipLabel = data.labels[tooltipItem.index];
+              let tooltipData = allData[tooltipItem.index];
+              let total = 0;
+              for (let i in allData) {
+                total += parseFloat(allData[i]);
+              }
+              let tooltipPercentage = Math.round((tooltipData / total) * 100);
+              return (
+                tooltipLabel +
+                ": " +
+                tooltipData +
+                " (" +
+                tooltipPercentage +
+                "%)"
+              );
+            }
+          }
         }
       }
     };
