@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-title data-title="COVID-19 statistics for NSW">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
