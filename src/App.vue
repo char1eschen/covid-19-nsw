@@ -167,7 +167,7 @@ export default {
         },
         title: {
           display: true,
-          text: "Imported cases from overseas"
+          text: "Overseas acquired cases"
         },
         tooltips: {
           callbacks: {
@@ -264,7 +264,7 @@ export default {
         },
         title: {
           display: true,
-          text: "Origin statistics"
+          text: "Source statistics"
         },
         animation: {
           animateScale: true,
@@ -356,7 +356,12 @@ export default {
           };
           let previousDayData = [];
           this.tableData.map(item => {
-            if (moment().isSame(item.dateofdiagnosis, "day")) {
+            if (
+              this.tableData[0].dateofdiagnosis.isSame(
+                item.dateofdiagnosis,
+                "day"
+              )
+            ) {
               previousDayData.push(item);
             }
             switch (item.status) {
@@ -433,7 +438,7 @@ export default {
             ]
           };
 
-          // imported cases from overseas chart & origin statistics
+          // source chart & source statistics
           let overseasChartData = this.chartDataFilter(
             this.tableData,
             "origin",
@@ -442,7 +447,11 @@ export default {
           let overseasLabels = [];
           let countryData = [];
           for (let item of overseasChartData) {
-            if (item.origin !== "Local" && item.origin !== "Unknown") {
+            if (
+              item.origin !== "Contacts" &&
+              item.origin !== "Unknown" &&
+              item.origin !== "Investigating"
+            ) {
               overseasLabels.push(item.origin);
               countryData.push(item.lst.length);
             }
@@ -460,15 +469,24 @@ export default {
             ]
           };
 
-          let originChartLabels = ["Overseas", "Local", "Unknown"];
-          let originChartData = [this.sum(countryData), 0, 0];
-          for (let item of overseasChartData) {
-            if (item.origin === "Local") {
-              originChartData[1] = item.lst.length;
-            } else if (item.origin === "Unknown") {
-              originChartData[2] = item.lst.length;
-            }
-          }
+          let originChartLabels = [
+            "Overseas",
+            "Contacts",
+            "Investigating",
+            "Unknown"
+          ];
+          // todo edit source chart datavhere
+          let originChartData = [60, 38, 23, 13];
+          // let originChartData = [this.sum(countryData), 0, 0, 0];
+          // for (let item of overseasChartData) {
+          //   if (item.origin === "Contacts") {
+          //     originChartData[1] = item.lst.length;
+          //   } else if (item.origin === "Investigating") {
+          //     originChartData[2] = item.lst.length;
+          //   } else if (item.origin === "Unknown") {
+          //     originChartData[3] = item.lst.length;
+          //   }
+          // }
 
           this.originChartData = {
             datasets: [
@@ -624,7 +642,7 @@ export default {
               },
               {
                 type: "bar",
-                label: "Investigated cases",
+                label: "Investigating cases",
                 backgroundColor: chartColors.darkGrey,
                 data: underinvestigation.slice(-21),
                 yAxisID: "y1"
