@@ -102,7 +102,7 @@
             </p>
             <p v-else>No increment</p>
             <p class="number">{{ statistics[1].underinvestigation }}</p>
-            <p class="text">Investigated</p>
+            <p class="text">Investigating</p>
           </div>
         </div>
         <div class="col-xs-4 mt-10">
