@@ -2,10 +2,13 @@
   <header>
     <h1>NSW Coronavirus (COVID-19) statistics</h1>
     <small>Updated on {{ updatedDate }}</small>
+    <SocialmediaShare />
   </header>
 </template>
 
 <script>
+import SocialmediaShare from "./SocialmediaShare.vue";
+
 export default {
   name: "Header",
   data() {
@@ -17,7 +20,10 @@ export default {
       default: null
     }
   },
-  methods: {}
+  methods: {},
+  components: {
+    SocialmediaShare
+  }
 };
 </script>
 
@@ -25,7 +31,7 @@ export default {
 <style scoped lang="stylus">
 header {
   padding: 0 15px;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
   text-align: left;
 }
 h1 {
