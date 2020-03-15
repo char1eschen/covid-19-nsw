@@ -1,9 +1,9 @@
 <template>
   <div class="share col-xs-12">
-    <facebook :url="url" scale="2"></facebook>
-    <twitter :url="url" scale="2"></twitter>
-    <telegram :url="url" scale="2"></telegram>
-    <whats-app :url="url" scale="2"></whats-app>
+    <facebook :url="url" sh :scale="scale"></facebook>
+    <twitter :url="url" :title="title" :scale="scale"></twitter>
+    <telegram :url="url" :title="title" :scale="scale"></telegram>
+    <whats-app :url="url" :title="title" :scale="scale"></whats-app>
   </div>
 </template>
 
@@ -19,7 +19,11 @@ export default {
   },
   data() {
     return {
-      url: "https://char1eschen.github.io/covid-19-nsw"
+      url: "https://char1eschen.github.io/covid-19-nsw",
+      title: "COVID-19 statistics for NSW",
+      description:
+        "To track the latest updates on COVID-19 (Coronavirus) in NSW.",
+      scale: "2"
     };
   }
 };
