@@ -167,7 +167,7 @@ export default {
         },
         title: {
           display: true,
-          text: "Imported cases from overseas"
+          text: "Overseas acquired cases"
         },
         tooltips: {
           callbacks: {
@@ -264,7 +264,7 @@ export default {
         },
         title: {
           display: true,
-          text: "Origin statistics"
+          text: "Source statistics"
         },
         animation: {
           animateScale: true,
