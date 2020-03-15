@@ -356,7 +356,12 @@ export default {
           };
           let previousDayData = [];
           this.tableData.map(item => {
-            if (moment().isSame(item.dateofdiagnosis, "day")) {
+            if (
+              this.tableData[0].dateofdiagnosis.isSame(
+                item.dateofdiagnosis,
+                "day"
+              )
+            ) {
               previousDayData.push(item);
             }
             switch (item.status) {
