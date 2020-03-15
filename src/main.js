@@ -8,12 +8,6 @@ let theme = "bootstrap3";
 let template = "default";
 Vue.use(ClientTable, options, useVuex, theme, template);
 
-Vue.directive("title", {
-  inserted: el => {
-    document.title = el.dataset.title;
-  }
-});
-
 Vue.config.productionTip = false;
 
 new Vue({
