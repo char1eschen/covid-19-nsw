@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-title data-title="COVID-19 statistics for NSW">
+  <div id="app">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
@@ -476,7 +476,7 @@ export default {
             "Unknown"
           ];
           // todo edit source chart datavhere
-          let originChartData = [60, 38, 23, 13];
+          let originChartData = [60, 40, 23, 13];
           // let originChartData = [this.sum(countryData), 0, 0, 0];
           // for (let item of overseasChartData) {
           //   if (item.origin === "Contacts") {
