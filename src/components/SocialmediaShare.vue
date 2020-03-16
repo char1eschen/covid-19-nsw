@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      url: "https://char1eschen.github.io/covid-19-nsw",
+      url: "https://charliechen.me/covid-19-nsw/",
       title: "COVID-19 statistics for NSW",
       description:
         "Tracking the latest updates on COVID-19 (Coronavirus) in NSW.",
