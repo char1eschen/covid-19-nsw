@@ -31,7 +31,7 @@ export default {
 <style scoped lang="stylus">
 header {
   padding: 0 15px;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
   text-align: left;
 }
 
