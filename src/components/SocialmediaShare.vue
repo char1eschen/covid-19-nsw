@@ -22,7 +22,7 @@ export default {
       url: "https://char1eschen.github.io/covid-19-nsw",
       title: "COVID-19 statistics for NSW",
       description:
-        "To track the latest updates on COVID-19 (Coronavirus) in NSW.",
+        "Tracking the latest updates on COVID-19 (Coronavirus) in NSW.",
       scale: "2"
     };
   }
