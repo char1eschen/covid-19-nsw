@@ -31,12 +31,13 @@ export default {
 <style scoped lang="stylus">
 header {
   padding: 0 15px;
-  // margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: left;
 }
 
 h1 {
   font-size: 2.5rem;
+  margin-top 25px
 }
 
 .bg {

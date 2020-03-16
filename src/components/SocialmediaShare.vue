@@ -48,5 +48,5 @@ a
 
 .share > span
   float: left
-  padding: 0.6em
+  padding: 0.5em
 </style>
