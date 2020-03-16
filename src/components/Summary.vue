@@ -16,7 +16,7 @@
       <div class="row">
         <div class="col-sm-4 mt-10">
           <div class="summaryPanel confirmed">
-            <p v-if="incrementCases.confirmed !== 0">
+            <p class="increment" v-if="incrementCases.confirmed !== 0">
               Compared to yesterday
               <em
                 :class="[
@@ -28,7 +28,7 @@
                 }}{{ incrementCases.confirmed }}</em
               >
             </p>
-            <p v-else>No increment</p>
+            <p class="increment" v-else>No increment</p>
             <p class="number">{{ cases.confirmed }}</p>
             <p class="text">Active</p>
           </div>
@@ -36,7 +36,7 @@
         <hr class="visible-xs" />
         <div class="col-sm-4 mt-10">
           <div class="summaryPanel recovered line">
-            <p v-if="incrementCases.recovered !== 0">
+            <p class="increment" v-if="incrementCases.recovered !== 0">
               Compared to yesterday
               <em
                 :class="[
@@ -48,7 +48,7 @@
                 }}{{ incrementCases.recovered }}</em
               >
             </p>
-            <p v-else>No increment</p>
+            <p class="increment" v-else>No increment</p>
             <p class="number">{{ cases.recovered }}</p>
             <p class="text">Recoveries</p>
           </div>
@@ -56,7 +56,7 @@
         <hr class="visible-xs" />
         <div class="col-sm-4 mt-10">
           <div class="summaryPanel death">
-            <p v-if="incrementCases.death !== 0">
+            <p class="increment" v-if="incrementCases.death !== 0">
               Compared to yesterday
               <em
                 :class="[
@@ -66,7 +66,7 @@
                 }}{{ incrementCases.death }}</em
               >
             </p>
-            <p v-else>No increment</p>
+            <p class="increment" v-else>No increment</p>
             <p class="number">{{ cases.death }}</p>
             <p class="text">Deaths</p>
           </div>
@@ -74,7 +74,7 @@
         <hr class="visible-xs" />
         <div class="col-sm-4 mt-10">
           <div class="summaryPanel total">
-            <p v-if="incrementCases.total !== 0">
+            <p class="increment" v-if="incrementCases.total !== 0">
               Compared to yesterday
               <em
                 :class="[
@@ -84,7 +84,7 @@
                 }}{{ incrementCases.total }}</em
               >
             </p>
-            <p v-else>No increment</p>
+            <p class="increment" v-else>No increment</p>
             <p class="number">{{ cases.total }}</p>
             <p class="text">Total confirmed</p>
           </div>
@@ -92,7 +92,7 @@
         <hr class="visible-xs" />
         <div class="col-sm-4 mt-10">
           <div class="summaryPanel investigated line">
-            <p v-if="investigatedIncrease !== 0">
+            <p class="increment" v-if="investigatedIncrease !== 0">
               Compared to yesterday
               <em
                 :class="[
@@ -102,7 +102,7 @@
                 }}{{ investigatedIncrease }}</em
               >
             </p>
-            <p v-else>No increment</p>
+            <p class="increment" v-else>No increment</p>
             <p class="number">{{ statistics[1].underinvestigation }}</p>
             <p class="text">Investigating</p>
           </div>
@@ -110,7 +110,7 @@
         <hr class="visible-xs" />
         <div class="col-sm-4 mt-10">
           <div class="summaryPanel excluded">
-            <p v-if="excludedIncrease !== 0">
+            <p class="increment" v-if="excludedIncrease !== 0">
               Compared to yesterday
               <em
                 :class="[
@@ -119,7 +119,7 @@
                 >{{ prefix(excludedIncrease) }}{{ excludedIncrease }}</em
               >
             </p>
-            <p v-else>No increment</p>
+            <p class="increment" v-else>No increment</p>
             <p class="number">{{ statistics[1].testedandexcluded }}</p>
             <p class="text">Excluded</p>
           </div>
@@ -182,6 +182,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="stylus">
+hr
+  margin 0
 .intro
   text-align left
   margin-bottom 15px
@@ -201,19 +203,37 @@ export default {
 //   background-image: linear-gradient(180deg,#eee,#e1e1e1 51%,#fff);
 //   content: "";
 .increase
-  color: rgb(255, 99, 132)
+  color rgb(255, 99, 132)
 .decrease
-  color: rgb(75, 192, 192)
+  color rgb(75, 192, 192)
 .confirmed .number
-  color: rgb(255, 159, 64)
+  color rgb(255, 159, 64)
 .recovered .number
-  color: rgb(75, 192, 192)
+  color rgb(75, 192, 192)
 .death .number
-  color: rgb(153,153,153)
+  color rgb(153,153,153)
 .total .number
-  color: rgb(255, 99, 132)
+  color rgb(255, 99, 132)
 .investigated .number
-  color: rgb(255, 205, 86)
+  color rgb(255, 205, 86)
 .excluded .number
-  color: rgb(54, 162, 235)
+  color rgb(54, 162, 235)
+
+@media (max-width: 767.98px)
+  .summaryPanel
+    display grid
+  .increment
+    grid-column 1 / 3
+    grid-row 2 / 3
+    text-align left
+  .text
+    grid-column 1 / 2
+    text-align left
+    align-self center
+  .number
+    grid-column 2 / 3
+    grid-row 1 / 2
+    font-size 3rem
+    text-align right
+    align-self center
 </style>

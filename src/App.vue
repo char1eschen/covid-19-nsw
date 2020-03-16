@@ -11,7 +11,11 @@
           />
 
           <div class="row">
-            <Header class="col-xs-12" v-if="!isLoading" :updatedDate="updatedDate" />
+            <Header
+              class="col-xs-12"
+              v-if="!isLoading"
+              :updatedDate="updatedDate"
+            />
           </div>
 
           <Summary
@@ -126,6 +130,7 @@ export default {
       doughnutChartOptions: {
         responsive: true,
         legend: {
+          // display: false
           position: "top"
         },
         title: {
@@ -224,6 +229,7 @@ export default {
       ageGroupChartOptions: {
         responsive: true,
         legend: {
+          // display: false
           position: "top"
         },
         title: {
@@ -261,6 +267,7 @@ export default {
       originChartOptions: {
         responsive: true,
         legend: {
+          // display: false
           position: "top"
         },
         title: {
@@ -472,12 +479,12 @@ export default {
 
           let originChartLabels = [
             "Overseas",
-            "Contacts",
+            "Epi link",
             "Investigating",
             "Unknown"
           ];
           // todo edit source chart datavhere
-          let originChartData = [60, 40, 23, 13];
+          let originChartData = [67, 44, 43, 17];
           // let originChartData = [this.sum(countryData), 0, 0, 0];
           // for (let item of overseasChartData) {
           //   if (item.origin === "Contacts") {
@@ -523,7 +530,8 @@ export default {
             datasets: [
               {
                 borderColor: "#f9f9f9",
-                data: genderChartData,
+                // data: genderChartData,
+                data: [83, 88],
                 backgroundColor: [chartColors.blue, chartColors.red]
               }
             ],
@@ -531,38 +539,50 @@ export default {
           };
 
           // age group statistics
-          let ageData = JSON.parse(JSON.stringify(this.tableData));
-          let ageMap = {
-            "0s": 0,
-            "10s": 0,
-            "20s": 0,
-            "30s": 0,
-            "40s": 0,
-            "50s": 0,
-            "60s": 0,
-            "70s": 0,
-            "80s": 0,
-            "90s": 0
-          };
+          // let ageData = JSON.parse(JSON.stringify(this.tableData));
+          // let ageMap = {
+          //   "0s": 0,
+          //   "10s": 0,
+          //   "20s": 0,
+          //   "30s": 0,
+          //   "40s": 0,
+          //   "50s": 0,
+          //   "60s": 0,
+          //   "70s": 0,
+          //   "80s": 0,
+          //   "90s": 0
+          // };
           let ageGroupChartData = [];
           let ageGroutChartLabels = [];
-          ageData.forEach(item => {
-            if (item.age.includes("s")) {
-              item.age = parseInt(item.age.replace(/s/gi, ""));
-            } else {
-              item.age = parseInt(item.age);
-            }
-            if (item.age < 10) {
-              ageMap["0s"]++;
-            } else {
-              let key = parseInt((item.age % 100) / 10) * 10 + "s";
-              ageMap[key]++;
-            }
-          });
-          for (let key in ageMap) {
-            ageGroupChartData.push(ageMap[key]);
-            ageGroutChartLabels.push(key);
-          }
+          // ageData.forEach(item => {
+          //   if (item.age.includes("s")) {
+          //     item.age = parseInt(item.age.replace(/s/gi, ""));
+          //   } else {
+          //     item.age = parseInt(item.age);
+          //   }
+          //   if (item.age < 10) {
+          //     ageMap["0s"]++;
+          //   } else {
+          //     let key = parseInt((item.age % 100) / 10) * 10 + "s";
+          //     ageMap[key]++;
+          //   }
+          // });
+          // for (let key in ageMap) {
+          //   ageGroupChartData.push(ageMap[key]);
+          //   ageGroutChartLabels.push(key);
+          // }
+          ageGroutChartLabels = [
+            "10-20",
+            "20-30",
+            "30-40",
+            "40-50",
+            "50-60",
+            "60-70",
+            "70-80",
+            "80-90",
+            "90-100"
+          ];
+          ageGroupChartData = [0, 11, 23, 42, 28, 30, 25, 6, 3, 3];
           this.ageGroupChartData = {
             datasets: [
               {
