@@ -14,7 +14,7 @@
 
     <div class="panel">
       <div class="row">
-        <div class="col-xs-4 mt-10">
+        <div class="col-sm-4 mt-10">
           <div class="summaryPanel confirmed">
             <p v-if="incrementCases.confirmed !== 0">
               Compared to yesterday
@@ -33,7 +33,8 @@
             <p class="text">Active</p>
           </div>
         </div>
-        <div class="col-xs-4 mt-10">
+        <hr class="visible-xs" />
+        <div class="col-sm-4 mt-10">
           <div class="summaryPanel recovered line">
             <p v-if="incrementCases.recovered !== 0">
               Compared to yesterday
@@ -52,7 +53,8 @@
             <p class="text">Recoveries</p>
           </div>
         </div>
-        <div class="col-xs-4 mt-10">
+        <hr class="visible-xs" />
+        <div class="col-sm-4 mt-10">
           <div class="summaryPanel death">
             <p v-if="incrementCases.death !== 0">
               Compared to yesterday
@@ -69,9 +71,8 @@
             <p class="text">Deaths</p>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-4 mt-10">
+        <hr class="visible-xs" />
+        <div class="col-sm-4 mt-10">
           <div class="summaryPanel total">
             <p v-if="incrementCases.total !== 0">
               Compared to yesterday
@@ -88,7 +89,8 @@
             <p class="text">Total confirmed</p>
           </div>
         </div>
-        <div class="col-xs-4 mt-10">
+        <hr class="visible-xs" />
+        <div class="col-sm-4 mt-10">
           <div class="summaryPanel investigated line">
             <p v-if="investigatedIncrease !== 0">
               Compared to yesterday
@@ -105,7 +107,8 @@
             <p class="text">Investigating</p>
           </div>
         </div>
-        <div class="col-xs-4 mt-10">
+        <hr class="visible-xs" />
+        <div class="col-sm-4 mt-10">
           <div class="summaryPanel excluded">
             <p v-if="excludedIncrease !== 0">
               Compared to yesterday

@@ -2,7 +2,7 @@
   <div id="app">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-sm-10 col-sm-offset-1">
           <Loading
             :active.sync="isLoading"
             :can-cancel="true"
@@ -11,11 +11,7 @@
           />
 
           <div class="row">
-            <Header
-              class="col-xs-12"
-              v-if="!isLoading"
-              :updatedDate="updatedDate"
-            />
+            <Header class="col-xs-12" v-if="!isLoading" :updatedDate="updatedDate" />
           </div>
 
           <Summary
@@ -26,42 +22,47 @@
             :statistics="statistics"
           />
 
-          <div class="container-fluid panel">
-            <div class="row" v-if="!isLoading">
-              <PanelHeader class="col-xs-12" panelTitle="Statistics charts" />
-              <ComboBarLineChart
-                class="col-sm-4 mb-15"
-                :chartdata="comboChartData"
-                :options="comboChartOptions"
-              />
-              <ComboBarLineChart
-                class="col-sm-4 mb-15"
-                :chartdata="statisticsChartData"
-                :options="statisticsChartOptions"
-              />
-              <HorizontalBarChart
-                class="col-sm-4 mb-15"
-                :chartdata="horizontalbarChartData"
-                :options="horizontalbarChartOptions"
-              />
+          <div class="container-fluid panel" v-if="!isLoading">
+            <PanelHeader panelTitle="Statistics charts" />
+
+            <div class="row">
+              <div class="col-xs-12 no-gutter">
+                <ComboBarLineChart
+                  class="col-sm-4 mb-15"
+                  :chartdata="comboChartData"
+                  :options="comboChartOptions"
+                />
+                <ComboBarLineChart
+                  class="col-sm-4 mb-15"
+                  :chartdata="statisticsChartData"
+                  :options="statisticsChartOptions"
+                />
+                <HorizontalBarChart
+                  class="col-sm-4 mb-15"
+                  :chartdata="horizontalbarChartData"
+                  :options="horizontalbarChartOptions"
+                />
+              </div>
             </div>
 
-            <div class="row" v-if="!isLoading">
-              <DoughnutChart
-                class="col-sm-4 mb-20"
-                :chartdata="doughnutChartData"
-                :options="doughnutChartOptions"
-              />
-              <DoughnutChart
-                class="col-sm-4 mb-20"
-                :chartdata="originChartData"
-                :options="originChartOptions"
-              />
-              <DoughnutChart
-                class="col-sm-4 mb-20"
-                :chartdata="ageGroupChartData"
-                :options="ageGroupChartOptions"
-              />
+            <div class="row">
+              <div class="col-xs-12 no-gutter">
+                <DoughnutChart
+                  class="col-sm-4 mb-20"
+                  :chartdata="doughnutChartData"
+                  :options="doughnutChartOptions"
+                />
+                <DoughnutChart
+                  class="col-sm-4 mb-20"
+                  :chartdata="originChartData"
+                  :options="originChartOptions"
+                />
+                <DoughnutChart
+                  class="col-sm-4 mb-20"
+                  :chartdata="ageGroupChartData"
+                  :options="ageGroupChartOptions"
+                />
+              </div>
             </div>
           </div>
 
@@ -87,7 +88,7 @@ import HorizontalBarChart from "./components/charts/HorizontalBarChart";
 import Table from "./components/Table.vue";
 import Footer from "./components/Footer.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
-import { chartColors } from "./assets/utils";
+import { chartColors } from "./assets/js/utils";
 
 const TABLETOKEN = "1SCaQqie7igxhaj6fK22oJmkz3xJlw_Snfp3jFqE2JhQ";
 const SUMMARYTOKEN = "1rvShbFWteDikTBV6tZaA7TWY2xQrTzB-mSqFJoXcFAc";
@@ -431,8 +432,8 @@ export default {
                 type: "bar",
                 label: "Daily new cases",
                 backgroundColor: chartColors.darkGrey,
-                borderColor: "white",
-                borderWidth: 2,
+                // borderColor: "transparent",
+                // borderWidth: 1,
                 data: this.dailyCases
               }
             ]
@@ -462,8 +463,8 @@ export default {
               {
                 label: "Comfirmed cases",
                 backgroundColor: chartColors.darkGrey,
-                borderColor: "white",
-                borderWidth: 2,
+                borderColor: "transparent",
+                borderWidth: 1,
                 data: countryData
               }
             ]
@@ -492,6 +493,7 @@ export default {
             datasets: [
               {
                 data: originChartData,
+                borderColor: "#f9f9f9",
                 backgroundColor: [
                   chartColors.red,
                   chartColors.orange,
@@ -520,6 +522,7 @@ export default {
           this.doughnutChartData = {
             datasets: [
               {
+                borderColor: "#f9f9f9",
                 data: genderChartData,
                 backgroundColor: [chartColors.blue, chartColors.red]
               }
@@ -564,6 +567,7 @@ export default {
             datasets: [
               {
                 data: ageGroupChartData,
+                borderColor: "#f9f9f9",
                 backgroundColor: [
                   chartColors.yellow,
                   chartColors.orange,
@@ -644,6 +648,8 @@ export default {
                 type: "bar",
                 label: "Investigating cases",
                 backgroundColor: chartColors.darkGrey,
+                // borderColor: "transparent",
+                // borderWidth: 1,
                 data: underinvestigation.slice(-21),
                 yAxisID: "y1"
               }
@@ -726,30 +732,174 @@ export default {
 </script>
 
 <style lang="stylus">
+.no-gutter {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.mb-15 {
+  margin-bottom: 15px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+body {
+  background: #dceefc;
+}
+
+hr {
+  margin-top: 10px;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 20px;
 }
+
+/* * Panel * */
 .panel {
   position: relative;
   background: #f9f9f9;
   margin: 0 0 25px 0;
   border: none;
   padding: 0 20px;
-  box-shadow: 0 0 6px 0 rgba(0,0,0,.2);
-  border-radius: 4px;
+  box-shadow: 2px 2px 4px rgba(56, 53, 45, 0.3), -2px -4px 4px hsla(0, 0%, 100%, 0.5), inset 1px 1px 1px rgba(224, 234, 249, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
 }
-hr
-  margin-top: 10px
-.mb-15
-  margin-bottom: 15px
 
-.mb-20
-  margin-bottom: 20px
-.mt-10
-  margin-top: 10px
+/* * Vue Tables * */
+.VueTables .row {
+  margin: 0;
+}
+
+/* * Pagination * */
+.pagination {
+  width: 100%;
+  height: 30px;
+  text-align: center;
+  font-size: 0;
+  margin: 25px 0 10px 0;
+
+  li {
+    list-style: none;
+    float: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 0;
+
+    a {
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      border: none;
+      border-left: none;
+      color: rgb(44, 62, 80);
+      opacity: 0.5;
+      width: 24px;
+      height: 30px;
+      line-height: 30px;
+      background: none;
+
+      &:hover, &:focus {
+        border: none;
+        border-left: none;
+        background: none;
+        color: rgb(44, 62, 80);
+        opacity: 1;
+      }
+    }
+
+    &.disabled {
+      background: none;
+
+      a {
+        background: none;
+      }
+    }
+
+    &.VuePagination__pagination-item-prev-chunk, &.VuePagination__pagination-item-next-chunk {
+      display: none;
+    }
+
+    &.VuePagination__pagination-item-prev-page, &.VuePagination__pagination-item-next-page {
+      a {
+        overflow: hidden;
+        line-height: 200px;
+        position: relative;
+        background: none;
+
+        &:before {
+          content: '';
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          line-height: 30px;
+          display: block;
+          position: absolute;
+        }
+      }
+    }
+
+    &.VuePagination__pagination-item-prev-page {
+      a {
+        border-left: none;
+
+        &:before {
+          content: '<';
+        }
+
+        &:hover, &:focus {
+          border-left: none;
+          background: none;
+        }
+      }
+    }
+
+    &.VuePagination__pagination-item-next-page {
+      a {
+        border-left: none;
+
+        &:before {
+          content: '>';
+        }
+
+        &:hover, &:focus {
+          background: none;
+        }
+      }
+    }
+
+    &.active {
+      a {
+        background: none;
+        border: none;
+        color: rgb(44, 62, 80);
+        opacity: 1;
+
+        &:hover, &:focus {
+          background: none;
+          border: none;
+          color: rgb(44, 62, 80);
+        }
+      }
+    }
+  }
+}
+
+.VuePagination__count {
+  font-size: 12px;
+  margin: 0 auto 20px auto;
+}
 </style>
