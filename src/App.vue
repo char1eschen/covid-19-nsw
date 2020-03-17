@@ -346,7 +346,7 @@ export default {
       return (
         this.summaryDataLoading ||
         this.tableDataLoading ||
-        this.ageGroupLoading ||
+        this.agegroupLoading ||
         this.sourceLoading
       );
     }
