@@ -28,7 +28,7 @@
                 }}{{ incrementCases.confirmed }}</em
               >
             </p>
-            <p class="increment" v-else>No increment</p>
+            <p class="increment" v-else>No-growth</p>
             <p class="number">{{ cases.confirmed }}</p>
             <p class="text">Active</p>
           </div>
@@ -48,7 +48,7 @@
                 }}{{ incrementCases.recovered }}</em
               >
             </p>
-            <p class="increment" v-else>No increment</p>
+            <p class="increment" v-else>No-growth</p>
             <p class="number">{{ cases.recovered }}</p>
             <p class="text">Recoveries</p>
           </div>
@@ -66,9 +66,9 @@
                 }}{{ incrementCases.death }}</em
               >
             </p>
-            <p class="increment" v-else>No increment</p>
+            <p class="increment" v-else>No-growth</p>
             <p class="number">{{ cases.death }}</p>
-            <p class="text">Deaths</p>
+            <p class="text">Deaths<sup>1</sup></p>
           </div>
         </div>
         <hr class="visible-xs" />
@@ -84,9 +84,9 @@
                 }}{{ incrementCases.total }}</em
               >
             </p>
-            <p class="increment" v-else>No increment</p>
+            <p class="increment" v-else>No-growth</p>
             <p class="number">{{ cases.total }}</p>
-            <p class="text">Total confirmed</p>
+            <p class="text">Total confirmed<sup>2</sup></p>
           </div>
         </div>
         <hr class="visible-xs" />
@@ -102,7 +102,7 @@
                 }}{{ investigatedIncrease }}</em
               >
             </p>
-            <p class="increment" v-else>No increment</p>
+            <p class="increment" v-else>No-growth</p>
             <p class="number">{{ statistics[1].underinvestigation }}</p>
             <p class="text">Investigating</p>
           </div>
@@ -119,12 +119,22 @@
                 >{{ prefix(excludedIncrease) }}{{ excludedIncrease }}</em
               >
             </p>
-            <p class="increment" v-else>No increment</p>
+            <p class="increment" v-else>No-growth</p>
             <p class="number">{{ statistics[1].testedandexcluded }}</p>
             <p class="text">Excluded</p>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="row mb-15">
+      <small class="col-xs-12"
+        >1. Includes a QLD resident who died in NSW.</small
+      >
+      <small class="col-xs-12"
+        >2. Includes a Victorian resident hospitalised in NSW and a QLD resident
+        (deceased).</small
+      >
     </div>
   </div>
 </template>
@@ -184,6 +194,10 @@ export default {
 <style scoped lang="stylus">
 hr
   margin 0
+small
+  text-align left
+.panel
+  margin-bottom 15px
 .intro
   text-align left
   margin-bottom 15px

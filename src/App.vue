@@ -41,10 +41,10 @@
                   :chartdata="statisticsChartData"
                   :options="statisticsChartOptions"
                 />
-                <HorizontalBarChart
-                  class="col-sm-4 mb-15"
-                  :chartdata="horizontalbarChartData"
-                  :options="horizontalbarChartOptions"
+                <DoughnutChart
+                  class="col-sm-4 mb-20"
+                  :chartdata="ageGroupChartData"
+                  :options="ageGroupChartOptions"
                 />
               </div>
             </div>
@@ -61,10 +61,10 @@
                   :chartdata="originChartData"
                   :options="originChartOptions"
                 />
-                <DoughnutChart
-                  class="col-sm-4 mb-20"
-                  :chartdata="ageGroupChartData"
-                  :options="ageGroupChartOptions"
+                <HorizontalBarChart
+                  class="col-sm-4 mb-15"
+                  :chartdata="horizontalbarChartData"
+                  :options="horizontalbarChartOptions"
                 />
               </div>
             </div>
@@ -119,11 +119,44 @@ export default {
         responsive: true,
         title: {
           display: true,
-          text: "Total confirmed cases and daily new cases"
+          text: "Total confirmed cases, daily new cases & growth rate"
         },
         tooltips: {
           mode: "index",
-          intersect: true
+          intersect: true,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let label = data.datasets[tooltipItem.datasetIndex].label || "";
+
+              if (label) {
+                label += `: ${tooltipItem.value}`;
+              }
+              if (tooltipItem.datasetIndex === 1) {
+                label += "%";
+              }
+              return label;
+            }
+          }
+        },
+        scales: {
+          y: {
+            type: "linear",
+            display: true,
+            position: "left"
+          },
+          y1: {
+            type: "linear",
+            display: true,
+            position: "right",
+            ticks: {
+              callback: function(value) {
+                return value + "%";
+              }
+            },
+            gridLines: {
+              drawOnChartArea: false
+            }
+          }
         }
       },
       doughnutChartData: null,
@@ -173,7 +206,7 @@ export default {
         },
         title: {
           display: true,
-          text: "Overseas acquired cases"
+          text: "Overseas acquired cases (updated on 15 Mar)"
         },
         tooltips: {
           callbacks: {
@@ -416,6 +449,7 @@ export default {
           );
           let chartLabels = [];
           let dailyCases = [];
+          let growthRate = [];
           for (let item of comboChartData) {
             chartLabels.push(item.date);
             dailyCases.push(item.lst.length);
@@ -423,6 +457,17 @@ export default {
           this.labels = chartLabels.reverse();
           this.dailyCases = dailyCases.reverse();
           this.totalCases = this.calculateTotal(this.dailyCases);
+          for (let i = 0; i < this.dailyCases.length; i++) {
+            let rate = (
+              (this.dailyCases[i] / this.totalCases[i - 1]) *
+              100
+            ).toFixed(2);
+            if (!isNaN(rate)) {
+              growthRate.push(rate);
+            } else {
+              growthRate.push(0);
+            }
+          }
           this.comboChartData = {
             labels: this.labels,
             datasets: [
@@ -433,7 +478,18 @@ export default {
                 backgroundColor: "rgba(0, 0, 0, 0)",
                 borderWidth: 2,
                 fill: false,
-                data: this.totalCases
+                data: this.totalCases,
+                yAxisID: "y"
+              },
+              {
+                type: "line",
+                label: "Growth rate",
+                borderColor: chartColors.blue,
+                backgroundColor: "rgba(0, 0, 0, 0)",
+                borderWidth: 2,
+                fill: false,
+                data: growthRate,
+                yAxisID: "y1"
               },
               {
                 type: "bar",
@@ -441,7 +497,8 @@ export default {
                 backgroundColor: chartColors.darkGrey,
                 // borderColor: "transparent",
                 // borderWidth: 1,
-                data: this.dailyCases
+                data: this.dailyCases,
+                yAxisID: "y"
               }
             ]
           };
@@ -484,7 +541,7 @@ export default {
             "Unknown"
           ];
           // todo edit source chart datavhere
-          let originChartData = [67, 44, 43, 17];
+          let originChartData = [90, 54, 42, 24];
           // let originChartData = [this.sum(countryData), 0, 0, 0];
           // for (let item of overseasChartData) {
           //   if (item.origin === "Contacts") {
@@ -512,27 +569,27 @@ export default {
           };
 
           // gender statistics
-          let genderData = this.chartDataFilter(
-            this.tableData,
-            "gender",
-            "gender"
-          );
-          let genderChartLabels = ["Male", "Female"];
-          let genderChartData = [];
-          for (let item of genderData) {
-            if (item.gender === genderChartLabels[0]) {
-              genderChartData[0] = item.lst.length;
-            } else if (item.gender === genderChartLabels[1]) {
-              genderChartData[1] = item.lst.length;
-            }
-          }
+          // let genderData = this.chartDataFilter(
+          //   this.tableData,
+          //   "gender",
+          //   "gender"
+          // );
+          let genderChartLabels = ["Female", "Male"];
+          // let genderChartData = [];
+          // for (let item of genderData) {
+          //   if (item.gender === genderChartLabels[0]) {
+          //     genderChartData[0] = item.lst.length;
+          //   } else if (item.gender === genderChartLabels[1]) {
+          //     genderChartData[1] = item.lst.length;
+          //   }
+          // }
           this.doughnutChartData = {
             datasets: [
               {
                 borderColor: "#f9f9f9",
                 // data: genderChartData,
-                data: [83, 88],
-                backgroundColor: [chartColors.blue, chartColors.red]
+                data: [106, 104],
+                backgroundColor: [chartColors.red, chartColors.blue]
               }
             ],
             labels: genderChartLabels
@@ -582,7 +639,7 @@ export default {
             "80-90",
             "90-100"
           ];
-          ageGroupChartData = [0, 11, 23, 42, 28, 30, 25, 6, 3, 3];
+          ageGroupChartData = [11, 30, 53, 37, 35, 31, 8, 3, 3];
           this.ageGroupChartData = {
             datasets: [
               {
