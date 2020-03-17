@@ -627,19 +627,7 @@ export default {
           let entryData = response.data.feed.entry;
           let rawData = [];
           // get agegroup and gender data
-          entryData.forEach(item => {
-            let itemObj = {};
-            Object.keys(item).forEach(key => {
-              if (key.includes("gsx$")) {
-                if (key.substring(4) === "agegroup") {
-                  itemObj[key.substring(4)] = item[key]["$t"];
-                } else {
-                  itemObj[key.substring(4)] = parseInt(item[key]["$t"]);
-                }
-              }
-            });
-            rawData.push(itemObj);
-          });
+          this.dataFormat(entryData, "agegroup", rawData);
           // agegroup statistics
           let agegroup = rawData.splice(0, rawData.length - 1);
           let agegroupLabels = [];
@@ -703,19 +691,7 @@ export default {
           let entryData = response.data.feed.entry;
           let rawData = [];
           // get agegroup and gender data
-          entryData.forEach(item => {
-            let itemObj = {};
-            Object.keys(item).forEach(key => {
-              if (key.includes("gsx$")) {
-                if (key.substring(4) === "source") {
-                  itemObj[key.substring(4)] = item[key]["$t"];
-                } else {
-                  itemObj[key.substring(4)] = parseInt(item[key]["$t"]);
-                }
-              }
-            });
-            rawData.push(itemObj);
-          });
+          this.dataFormat(entryData, "source", rawData);
           // source statistics
           let sourceLabels = [];
           let sourceData = [];
@@ -747,6 +723,21 @@ export default {
         .finally(() => {
           // always executed
         });
+    },
+    dataFormat(entryData, column, rawData) {
+      entryData.forEach(item => {
+        let itemObj = {};
+        Object.keys(item).forEach(key => {
+          if (key.includes("gsx$")) {
+            if (key.substring(4) === column) {
+              itemObj[key.substring(4)] = item[key]["$t"];
+            } else {
+              itemObj[key.substring(4)] = parseInt(item[key]["$t"]);
+            }
+          }
+        });
+        rawData.push(itemObj);
+      });
     },
     chartDataFilter(val, key, newKey) {
       const map = {};
