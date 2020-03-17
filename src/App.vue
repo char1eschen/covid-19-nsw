@@ -236,7 +236,7 @@ export default {
         responsive: true,
         title: {
           display: true,
-          text: "Under investigation and excluded cases (Last 21 days)"
+          text: "Under investigation & excluded cases (Last 21 days)"
         },
         tooltips: {
           mode: "index",
