@@ -41,10 +41,10 @@
                   :chartdata="statisticsChartData"
                   :options="statisticsChartOptions"
                 />
-                <HorizontalBarChart
-                  class="col-sm-4 mb-15"
-                  :chartdata="horizontalbarChartData"
-                  :options="horizontalbarChartOptions"
+                <DoughnutChart
+                  class="col-sm-4 mb-20"
+                  :chartdata="agegroupChartData"
+                  :options="ageGroupChartOptions"
                 />
               </div>
             </div>
@@ -61,10 +61,10 @@
                   :chartdata="originChartData"
                   :options="originChartOptions"
                 />
-                <DoughnutChart
-                  class="col-sm-4 mb-20"
-                  :chartdata="ageGroupChartData"
-                  :options="ageGroupChartOptions"
+                <HorizontalBarChart
+                  class="col-sm-4 mb-15"
+                  :chartdata="horizontalbarChartData"
+                  :options="horizontalbarChartOptions"
                 />
               </div>
             </div>
@@ -92,10 +92,7 @@ import HorizontalBarChart from "./components/charts/HorizontalBarChart";
 import Table from "./components/Table.vue";
 import Footer from "./components/Footer.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
-import { chartColors } from "./assets/js/utils";
-
-const TABLETOKEN = "1SCaQqie7igxhaj6fK22oJmkz3xJlw_Snfp3jFqE2JhQ";
-const SUMMARYTOKEN = "1rvShbFWteDikTBV6tZaA7TWY2xQrTzB-mSqFJoXcFAc";
+import { chartColors, token } from "./assets/js/utils";
 
 export default {
   name: "App",
@@ -103,6 +100,8 @@ export default {
     return {
       summaryDataLoading: true,
       tableDataLoading: true,
+      agegroupLoading: true,
+      sourceLoading: true,
       loader: "dots",
       fullPage: true,
       statistics: null,
@@ -119,11 +118,44 @@ export default {
         responsive: true,
         title: {
           display: true,
-          text: "Total confirmed cases and daily new cases"
+          text: "Total confirmed cases, daily new cases & growth rate"
         },
         tooltips: {
           mode: "index",
-          intersect: true
+          intersect: true,
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let label = data.datasets[tooltipItem.datasetIndex].label || "";
+
+              if (label) {
+                label += `: ${tooltipItem.value}`;
+              }
+              if (tooltipItem.datasetIndex === 1) {
+                label += "%";
+              }
+              return label;
+            }
+          }
+        },
+        scales: {
+          y: {
+            type: "linear",
+            display: true,
+            position: "left"
+          },
+          y1: {
+            type: "linear",
+            display: true,
+            position: "right",
+            ticks: {
+              callback: function(value) {
+                return value + "%";
+              }
+            },
+            gridLines: {
+              drawOnChartArea: false
+            }
+          }
         }
       },
       doughnutChartData: null,
@@ -173,7 +205,7 @@ export default {
         },
         title: {
           display: true,
-          text: "Overseas acquired cases"
+          text: "Overseas acquired cases (updated on 15 Mar)"
         },
         tooltips: {
           callbacks: {
@@ -203,7 +235,7 @@ export default {
         responsive: true,
         title: {
           display: true,
-          text: "Under investigation and excluded cases (Last 21 days)"
+          text: "Under investigation & excluded cases (Last 21 days)"
         },
         tooltips: {
           mode: "index",
@@ -225,7 +257,7 @@ export default {
           }
         }
       },
-      ageGroupChartData: null,
+      agegroupChartData: null,
       ageGroupChartOptions: {
         responsive: true,
         legend: {
@@ -304,24 +336,30 @@ export default {
     };
   },
   mounted() {
+    this.getAgegroupData();
     this.getSummaryData();
+    this.getSourceData();
     this.getData();
   },
   computed: {
     isLoading: function() {
-      return this.summaryDataLoading || this.tableDataLoading;
+      return (
+        this.summaryDataLoading ||
+        this.tableDataLoading ||
+        this.agegroupLoading ||
+        this.sourceLoading
+      );
     }
   },
   methods: {
     getData() {
       axios
         .get(
-          `https://spreadsheets.google.com/feeds/list/${TABLETOKEN}/od6/public/values?alt=json`
+          `https://spreadsheets.google.com/feeds/list/${token.table}/od6/public/values?alt=json`
         )
         .then(response => {
           let columns = [];
           let entryData = response.data.feed.entry;
-          // let updated = response.data.feed.updated["$t"];
 
           // table data
           entryData.forEach(item => {
@@ -340,7 +378,6 @@ export default {
             });
             this.tableData.push(itemObj);
           });
-          // this.updatedDate = moment(updated).format("Do MMM YYYY, hh:mm:ss");
 
           // table columns
           if (this.tableData[0]) {
@@ -416,6 +453,7 @@ export default {
           );
           let chartLabels = [];
           let dailyCases = [];
+          let growthRate = [];
           for (let item of comboChartData) {
             chartLabels.push(item.date);
             dailyCases.push(item.lst.length);
@@ -423,6 +461,17 @@ export default {
           this.labels = chartLabels.reverse();
           this.dailyCases = dailyCases.reverse();
           this.totalCases = this.calculateTotal(this.dailyCases);
+          for (let i = 0; i < this.dailyCases.length; i++) {
+            let rate = (
+              (this.dailyCases[i] / this.totalCases[i - 1]) *
+              100
+            ).toFixed(2);
+            if (!isNaN(rate)) {
+              growthRate.push(rate);
+            } else {
+              growthRate.push(0);
+            }
+          }
           this.comboChartData = {
             labels: this.labels,
             datasets: [
@@ -433,7 +482,18 @@ export default {
                 backgroundColor: "rgba(0, 0, 0, 0)",
                 borderWidth: 2,
                 fill: false,
-                data: this.totalCases
+                data: this.totalCases,
+                yAxisID: "y"
+              },
+              {
+                type: "line",
+                label: "Growth rate",
+                borderColor: chartColors.blue,
+                backgroundColor: "rgba(0, 0, 0, 0)",
+                borderWidth: 2,
+                fill: false,
+                data: growthRate,
+                yAxisID: "y1"
               },
               {
                 type: "bar",
@@ -441,7 +501,8 @@ export default {
                 backgroundColor: chartColors.darkGrey,
                 // borderColor: "transparent",
                 // borderWidth: 1,
-                data: this.dailyCases
+                data: this.dailyCases,
+                yAxisID: "y"
               }
             ]
           };
@@ -477,134 +538,6 @@ export default {
             ]
           };
 
-          let originChartLabels = [
-            "Overseas",
-            "Epi link",
-            "Investigating",
-            "Unknown"
-          ];
-          // todo edit source chart datavhere
-          let originChartData = [67, 44, 43, 17];
-          // let originChartData = [this.sum(countryData), 0, 0, 0];
-          // for (let item of overseasChartData) {
-          //   if (item.origin === "Contacts") {
-          //     originChartData[1] = item.lst.length;
-          //   } else if (item.origin === "Investigating") {
-          //     originChartData[2] = item.lst.length;
-          //   } else if (item.origin === "Unknown") {
-          //     originChartData[3] = item.lst.length;
-          //   }
-          // }
-
-          this.originChartData = {
-            datasets: [
-              {
-                data: originChartData,
-                borderColor: "#f9f9f9",
-                backgroundColor: [
-                  chartColors.red,
-                  chartColors.orange,
-                  chartColors.blue
-                ]
-              }
-            ],
-            labels: originChartLabels
-          };
-
-          // gender statistics
-          let genderData = this.chartDataFilter(
-            this.tableData,
-            "gender",
-            "gender"
-          );
-          let genderChartLabels = ["Male", "Female"];
-          let genderChartData = [];
-          for (let item of genderData) {
-            if (item.gender === genderChartLabels[0]) {
-              genderChartData[0] = item.lst.length;
-            } else if (item.gender === genderChartLabels[1]) {
-              genderChartData[1] = item.lst.length;
-            }
-          }
-          this.doughnutChartData = {
-            datasets: [
-              {
-                borderColor: "#f9f9f9",
-                // data: genderChartData,
-                data: [83, 88],
-                backgroundColor: [chartColors.blue, chartColors.red]
-              }
-            ],
-            labels: genderChartLabels
-          };
-
-          // age group statistics
-          // let ageData = JSON.parse(JSON.stringify(this.tableData));
-          // let ageMap = {
-          //   "0s": 0,
-          //   "10s": 0,
-          //   "20s": 0,
-          //   "30s": 0,
-          //   "40s": 0,
-          //   "50s": 0,
-          //   "60s": 0,
-          //   "70s": 0,
-          //   "80s": 0,
-          //   "90s": 0
-          // };
-          let ageGroupChartData = [];
-          let ageGroutChartLabels = [];
-          // ageData.forEach(item => {
-          //   if (item.age.includes("s")) {
-          //     item.age = parseInt(item.age.replace(/s/gi, ""));
-          //   } else {
-          //     item.age = parseInt(item.age);
-          //   }
-          //   if (item.age < 10) {
-          //     ageMap["0s"]++;
-          //   } else {
-          //     let key = parseInt((item.age % 100) / 10) * 10 + "s";
-          //     ageMap[key]++;
-          //   }
-          // });
-          // for (let key in ageMap) {
-          //   ageGroupChartData.push(ageMap[key]);
-          //   ageGroutChartLabels.push(key);
-          // }
-          ageGroutChartLabels = [
-            "10-20",
-            "20-30",
-            "30-40",
-            "40-50",
-            "50-60",
-            "60-70",
-            "70-80",
-            "80-90",
-            "90-100"
-          ];
-          ageGroupChartData = [0, 11, 23, 42, 28, 30, 25, 6, 3, 3];
-          this.ageGroupChartData = {
-            datasets: [
-              {
-                data: ageGroupChartData,
-                borderColor: "#f9f9f9",
-                backgroundColor: [
-                  chartColors.yellow,
-                  chartColors.orange,
-                  chartColors.red,
-                  chartColors.darkRed,
-                  chartColors.green,
-                  chartColors.blue,
-                  chartColors.darkBlue,
-                  chartColors.purple,
-                  chartColors.grey,
-                  chartColors.darkGrey
-                ]
-              }
-            ],
-            labels: ageGroutChartLabels
-          };
-
           this.tableDataLoading = false;
         })
         .catch(error => {
@@ -618,7 +551,7 @@ export default {
     getSummaryData() {
       axios
         .get(
-          `https://spreadsheets.google.com/feeds/list/${SUMMARYTOKEN}/od6/public/values?alt=json`
+          `https://spreadsheets.google.com/feeds/list/${token.summary}/od6/public/values?alt=json`
         )
         .then(response => {
           let entryData = response.data.feed.entry;
@@ -684,6 +617,127 @@ export default {
         .finally(() => {
           // always executed
         });
+    },
+    getAgegroupData() {
+      axios
+        .get(
+          `https://spreadsheets.google.com/feeds/list/${token.agegroup}/od6/public/values?alt=json`
+        )
+        .then(response => {
+          let entryData = response.data.feed.entry;
+          let rawData = [];
+          // get agegroup and gender data
+          this.dataFormat(entryData, "agegroup", rawData);
+          // agegroup statistics
+          let agegroup = rawData.splice(0, rawData.length - 1);
+          let agegroupLabels = [];
+          let agegroupData = [];
+          agegroup.forEach(item => {
+            agegroupLabels.push(item.agegroup);
+            agegroupData.push(item.total);
+          });
+          this.agegroupChartData = {
+            datasets: [
+              {
+                data: agegroupData,
+                borderColor: "#f9f9f9",
+                backgroundColor: [
+                  chartColors.yellow,
+                  chartColors.orange,
+                  chartColors.red,
+                  chartColors.darkRed,
+                  chartColors.green,
+                  chartColors.blue,
+                  chartColors.darkBlue,
+                  chartColors.purple,
+                  chartColors.grey,
+                  chartColors.darkGrey
+                ]
+              }
+            ],
+            labels: agegroupLabels
+          };
+
+          // gender statistics
+          let gender = rawData[rawData.length - 1];
+          this.doughnutChartData = {
+            datasets: [
+              {
+                borderColor: "#f9f9f9",
+                // data: genderChartData,
+                data: [gender.female, gender.male],
+                backgroundColor: [chartColors.red, chartColors.blue]
+              }
+            ],
+            labels: ["Female", "Male"]
+          };
+
+          this.agegroupLoading = false;
+        })
+        .catch(error => {
+          // handle error
+          console.log(error);
+        })
+        .finally(() => {
+          // always executed
+        });
+    },
+    getSourceData() {
+      axios
+        .get(
+          `https://spreadsheets.google.com/feeds/list/${token.source}/od6/public/values?alt=json`
+        )
+        .then(response => {
+          let entryData = response.data.feed.entry;
+          let rawData = [];
+          // get agegroup and gender data
+          this.dataFormat(entryData, "source", rawData);
+          // source statistics
+          let sourceLabels = [];
+          let sourceData = [];
+          rawData.forEach(item => {
+            sourceLabels.push(item.source);
+            sourceData.push(item.count);
+          });
+          this.originChartData = {
+            datasets: [
+              {
+                data: sourceData,
+                borderColor: "#f9f9f9",
+                backgroundColor: [
+                  chartColors.red,
+                  chartColors.orange,
+                  chartColors.blue
+                ]
+              }
+            ],
+            labels: sourceLabels
+          };
+
+          this.sourceLoading = false;
+        })
+        .catch(error => {
+          // handle error
+          console.log(error);
+        })
+        .finally(() => {
+          // always executed
+        });
+    },
+    dataFormat(entryData, column, rawData) {
+      entryData.forEach(item => {
+        let itemObj = {};
+        Object.keys(item).forEach(key => {
+          if (key.includes("gsx$")) {
+            if (key.substring(4) === column) {
+              itemObj[key.substring(4)] = item[key]["$t"];
+            } else {
+              itemObj[key.substring(4)] = parseInt(item[key]["$t"]);
+            }
+          }
+        });
+        rawData.push(itemObj);
+      });
     },
     chartDataFilter(val, key, newKey) {
       const map = {};
