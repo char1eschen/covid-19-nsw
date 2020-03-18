@@ -162,7 +162,6 @@ export default {
       doughnutChartOptions: {
         responsive: true,
         legend: {
-          // display: false
           position: "top"
         },
         title: {
@@ -261,7 +260,6 @@ export default {
       ageGroupChartOptions: {
         responsive: true,
         legend: {
-          // display: false
           position: "top"
         },
         title: {
@@ -299,7 +297,6 @@ export default {
       originChartOptions: {
         responsive: true,
         legend: {
-          // display: false
           position: "top"
         },
         title: {
@@ -499,15 +496,13 @@ export default {
                 type: "bar",
                 label: "Daily new cases",
                 backgroundColor: chartColors.darkGrey,
-                // borderColor: "transparent",
-                // borderWidth: 1,
                 data: this.dailyCases,
                 yAxisID: "y"
               }
             ]
           };
 
-          // source chart & source statistics
+          // source statistics
           let overseasChartData = this.chartDataFilter(
             this.tableData,
             "origin",
@@ -575,7 +570,8 @@ export default {
             });
             summaryData.push(itemObj);
           });
-          this.statistics = summaryData.splice(-2);
+          console.log("summaryData", summaryData);
+          this.statistics = summaryData.slice(-2);
           let underinvestigation = [];
           let excluded = [];
           let summaryLabels = [];
@@ -601,8 +597,6 @@ export default {
                 type: "bar",
                 label: "Investigating cases",
                 backgroundColor: chartColors.darkGrey,
-                // borderColor: "transparent",
-                // borderWidth: 1,
                 data: underinvestigation.slice(-21),
                 yAxisID: "y1"
               }
