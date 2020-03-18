@@ -43,24 +43,41 @@
                 />
                 <DoughnutChart
                   class="col-sm-4 mb-20"
-                  :chartdata="agegroupChartData"
-                  :options="ageGroupChartOptions"
+                  :chartdata="originChartData"
+                  :options="originChartOptions"
                 />
               </div>
             </div>
 
             <div class="row">
               <div class="col-xs-12 no-gutter">
-                <DoughnutChart
-                  class="col-sm-4 mb-20"
-                  :chartdata="doughnutChartData"
-                  :options="doughnutChartOptions"
+                <BarChart
+                  class="col-sm-12 mb-15"
+                  :chartdata="growthChartData"
+                  :options="growthChartOptions"
                 />
-                <DoughnutChart
-                  class="col-sm-4 mb-20"
-                  :chartdata="originChartData"
-                  :options="originChartOptions"
-                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12 no-gutter">
+                <div>
+                  <DoughnutChart
+                    class="col-sm-4 mb-20"
+                    :chartdata="doughnutChartData"
+                    :options="doughnutChartOptions"
+                  />
+                  <DoughnutChart
+                    class="col-sm-4 mb-20"
+                    :chartdata="agegroupChartData"
+                    :options="ageGroupChartOptions"
+                  />
+                </div>
+                <!-- <HorizontalBarChart
+                  class="col-sm-8 mb-15"
+                  :chartdata="genderAgeChartData"
+                  :options="genderAgeChartOptions"
+                /> -->
                 <HorizontalBarChart
                   class="col-sm-4 mb-15"
                   :chartdata="horizontalbarChartData"
@@ -86,6 +103,7 @@ import Loading from "vue-loading-overlay";
 import Header from "./components/Header.vue";
 import PanelHeader from "./components/PanelHeader.vue";
 import Summary from "./components/Summary.vue";
+import BarChart from "./components/charts/BarChart";
 import ComboBarLineChart from "./components/charts/ComboBarLineChart";
 import DoughnutChart from "./components/charts/DoughnutChart";
 import HorizontalBarChart from "./components/charts/HorizontalBarChart";
@@ -329,6 +347,45 @@ export default {
             }
           }
         }
+      },
+      genderAgeChartData: null,
+      genderAgeChartOptions: {
+        // Elements options apply to all of the options unless overridden in a dataset
+        // In this case, we are setting the border of each horizontal bar to be 2px wide
+        elements: {
+          rectangle: {
+            borderWidth: 2
+          }
+        },
+        responsive: true,
+        legend: {
+          position: "right"
+        },
+        title: {
+          display: true,
+          text: "Chart.js Horizontal Bar Chart"
+        }
+      },
+      growthChartData: null,
+      growthChartOptions: {
+        title: {
+          display: true,
+          text: "Chart.js Bar Chart - Stacked"
+        },
+        tooltips: {
+          mode: "index",
+          intersect: false
+        },
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true
+          },
+          y: {
+            stacked: true
+          }
+        },
+        maintainAspectRatio: false
       }
     };
   },
@@ -570,12 +627,13 @@ export default {
             });
             summaryData.push(itemObj);
           });
-          console.log("summaryData", summaryData);
           this.statistics = summaryData.slice(-2);
+          let confirmed = [];
           let underinvestigation = [];
           let excluded = [];
           let summaryLabels = [];
           summaryData.forEach(item => {
+            this.addValToArr(item.confirmed, confirmed);
             this.addValToArr(item.underinvestigation, underinvestigation);
             this.addValToArr(item.testedandexcluded, excluded);
             this.addValToArr(item.date, summaryLabels);
@@ -599,6 +657,29 @@ export default {
                 backgroundColor: chartColors.darkGrey,
                 data: underinvestigation.slice(-21),
                 yAxisID: "y1"
+              }
+            ]
+          };
+          this.growthChartData = {
+            labels: summaryLabels,
+            datasets: [
+              {
+                label: "Confirmed",
+                backgroundColor: chartColors.red,
+                // borderColor: "rgba(236, 107, 86, .8)",
+                data: confirmed
+              },
+              {
+                label: "Under Investigations",
+                backgroundColor: chartColors.green,
+                // borderColor: "rgba(97, 188, 109, .8)",
+                data: underinvestigation
+              },
+              {
+                label: "Tested and Excludeds",
+                backgroundColor: chartColors.blue,
+                // borderColor: "rgba(54, 162, 235, .8)",
+                data: excluded
               }
             ]
           };
@@ -626,9 +707,13 @@ export default {
           let agegroup = rawData.splice(0, rawData.length - 1);
           let agegroupLabels = [];
           let agegroupData = [];
+          let female = [];
+          let male = [];
           agegroup.forEach(item => {
             agegroupLabels.push(item.agegroup);
             agegroupData.push(item.total);
+            female.push(item.female);
+            male.push(0 - item.male);
           });
           this.agegroupChartData = {
             datasets: [
@@ -650,6 +735,24 @@ export default {
               }
             ],
             labels: agegroupLabels
+          };
+          this.genderAgeChartData = {
+            labels: agegroupLabels,
+            datasets: [
+              {
+                label: "Female",
+                backgroundColor: chartColors.red,
+                borderColor: chartColors.red,
+                borderWidth: 1,
+                data: female
+              },
+              {
+                label: "Male",
+                backgroundColor: chartColors.blue,
+                borderColor: chartColors.blue,
+                data: male
+              }
+            ]
           };
 
           // gender statistics
@@ -789,6 +892,7 @@ export default {
     Header,
     PanelHeader,
     Summary,
+    BarChart,
     ComboBarLineChart,
     DoughnutChart,
     HorizontalBarChart,
