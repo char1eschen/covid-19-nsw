@@ -570,7 +570,6 @@ export default {
             });
             summaryData.push(itemObj);
           });
-          console.log("summaryData", summaryData);
           this.statistics = summaryData.slice(-2);
           let underinvestigation = [];
           let excluded = [];
