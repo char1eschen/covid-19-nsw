@@ -72,6 +72,18 @@
 
           <Table v-if="!isLoading" :columns="columns" :tableData="tableData" />
 
+          <div v-if="!isLoading" class="row">
+            <div class="col-xs-12">
+              <div class="comments">
+                <vue-disqus
+                  shortname="covid-19-nsw"
+                  :identifier="page_id"
+                  url="https://char1eschen.github.io/covid-19-nsw/"
+                ></vue-disqus>
+              </div>
+            </div>
+          </div>
+
           <Footer v-if="!isLoading" />
         </div>
       </div>

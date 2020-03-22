@@ -14,7 +14,7 @@
 
     <div class="panel">
       <div class="row">
-        <div class="col-sm-4 mt-10">
+        <div class="col-sm-6 mt-10">
           <div class="summaryPanel confirmed">
             <p class="increment" v-if="incrementCases.confirmed !== 0">
               Compared to yesterday
@@ -34,7 +34,7 @@
           </div>
         </div>
         <hr class="visible-xs" />
-        <div class="col-sm-4 mt-10">
+        <!-- <div class="col-sm-4 mt-10">
           <div class="summaryPanel recovered line">
             <p class="increment" v-if="incrementCases.recovered !== 0">
               Compared to yesterday
@@ -52,9 +52,9 @@
             <p class="number">{{ cases.recovered }}</p>
             <p class="text">Recoveries</p>
           </div>
-        </div>
+        </div> -->
         <hr class="visible-xs" />
-        <div class="col-sm-4 mt-10">
+        <div class="col-sm-6 mt-10">
           <div class="summaryPanel death">
             <p class="increment" v-if="incrementCases.death !== 0">
               Compared to yesterday
@@ -72,7 +72,7 @@
           </div>
         </div>
         <hr class="visible-xs" />
-        <div class="col-sm-4 mt-10">
+        <div class="col-sm-6 mt-10">
           <div class="summaryPanel total">
             <p class="increment" v-if="incrementCases.total !== 0">
               Compared to yesterday
@@ -90,7 +90,7 @@
           </div>
         </div>
         <hr class="visible-xs" />
-        <div class="col-sm-4 mt-10">
+        <!-- <div class="col-sm-4 mt-10">
           <div class="summaryPanel investigated line">
             <p class="increment" v-if="investigatedIncrease !== 0">
               Compared to yesterday
@@ -106,9 +106,9 @@
             <p class="number">{{ statistics[1].underinvestigation }}</p>
             <p class="text">Investigating</p>
           </div>
-        </div>
+        </div> -->
         <hr class="visible-xs" />
-        <div class="col-sm-4 mt-10">
+        <div class="col-sm-6 mt-10">
           <div class="summaryPanel excluded">
             <p class="increment" v-if="excludedIncrease !== 0">
               Compared to yesterday
@@ -206,16 +206,6 @@ small
   font-size 4rem
 .text
   font-weight 800
-// .line:before
-//   position: absolute;
-//   bottom: .04rem;
-//   left: -.005rem;
-//   z-index: 2;
-//   width: .01rem;
-//   height: .4rem;
-//   margin-top: -.15rem;
-//   background-image: linear-gradient(180deg,#eee,#e1e1e1 51%,#fff);
-//   content: "";
 .increase
   color rgb(255, 99, 132)
 .decrease
@@ -233,7 +223,7 @@ small
 .excluded .number
   color rgb(54, 162, 235)
 
-@media (max-width: 767.98px)
+// @media (max-width: 767.98px)
   .summaryPanel
     display grid
   .increment
