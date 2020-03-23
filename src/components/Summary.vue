@@ -53,7 +53,7 @@
             <p class="text">Recoveries</p>
           </div>
         </div> -->
-        <hr class="visible-xs" />
+        <!-- <hr class="visible-xs" /> -->
         <div class="col-sm-6 mt-10">
           <div class="summaryPanel death">
             <p class="increment" v-if="incrementCases.death !== 0">
@@ -107,7 +107,7 @@
             <p class="text">Investigating</p>
           </div>
         </div> -->
-        <hr class="visible-xs" />
+        <!-- <hr class="visible-xs" /> -->
         <div class="col-sm-6 mt-10">
           <div class="summaryPanel excluded">
             <p class="increment" v-if="excludedIncrease !== 0">

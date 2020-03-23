@@ -77,7 +77,6 @@
               <div class="comments">
                 <vue-disqus
                   shortname="covid-19-nsw"
-                  :identifier="page_id"
                   url="https://char1eschen.github.io/covid-19-nsw/"
                 ></vue-disqus>
               </div>
