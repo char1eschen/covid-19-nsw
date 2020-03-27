@@ -6,8 +6,8 @@
       <div class="col-xs-12">
         <p class="intro">
           As on {{ updatedDate }}, we have {{ cases.total }} confirmed cases of
-          coronavirus (COVID-19), including {{ cases.confirmed }} active cases,
-          {{ cases.recovered }} recoveries and {{ cases.death }} deaths, in NSW.
+          coronavirus (COVID-19), including {{ cases.confirmed }} active cases
+          and {{ cases.death }} deaths, in NSW.
         </p>
       </div>
     </div>
@@ -68,7 +68,7 @@
             </p>
             <p class="increment" v-else>No-growth</p>
             <p class="number">{{ cases.death }}</p>
-            <p class="text">Deaths<sup>1</sup></p>
+            <p class="text">Deceased<sup>1</sup></p>
           </div>
         </div>
         <hr class="visible-xs" />
@@ -86,7 +86,7 @@
             </p>
             <p class="increment" v-else>No-growth</p>
             <p class="number">{{ cases.total }}</p>
-            <p class="text">Total confirmed<sup>2</sup></p>
+            <p class="text">Total cases<sup>2</sup></p>
           </div>
         </div>
         <hr class="visible-xs" />
