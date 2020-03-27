@@ -70,9 +70,9 @@
             </div>
           </div>
 
-          <Table v-if="!isLoading" :columns="columns" :tableData="tableData" />
+          <!-- <Table v-if="!isLoading" :columns="columns" :tableData="tableData" /> -->
 
-          <div v-if="!isLoading" class="row">
+          <!-- <div v-if="!isLoading" class="row">
             <div class="col-xs-12">
               <div class="comments">
                 <vue-disqus
@@ -81,7 +81,7 @@
                 ></vue-disqus>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <Footer v-if="!isLoading" />
         </div>
@@ -100,7 +100,7 @@ import Summary from "./components/Summary.vue";
 import ComboBarLineChart from "./components/charts/ComboBarLineChart";
 import DoughnutChart from "./components/charts/DoughnutChart";
 import HorizontalBarChart from "./components/charts/HorizontalBarChart";
-import Table from "./components/Table.vue";
+// import Table from "./components/Table.vue";
 import Footer from "./components/Footer.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
 import { chartColors, token } from "./assets/js/utils";
@@ -802,7 +802,7 @@ export default {
     ComboBarLineChart,
     DoughnutChart,
     HorizontalBarChart,
-    Table,
+    // Table,
     Footer,
     Loading
   }
